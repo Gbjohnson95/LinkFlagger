@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name        Link Highlighter
-// @description Highlights brainhoney links.
+// @name        LinkFlagger
+// @description Highlights brainhoney and box links and images.
 // @include     *
 // @exclude     *brainhoney.com*
 // ==/UserScript==
