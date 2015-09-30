@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     10
+// @version     11
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -34,22 +34,6 @@ for (var i = 0; i < links.length; i++) {
     }
 }
 
-// Puts a red bar at the top if the title is wrong.
-var titles = document.getElementsByTagName('title');
-for (var i; i < links.length; i++) {
-    element = titles[i];
-    if (element.innerHTML == "BYU-Idaho") {
-        var body = document.getElementsByTagName('body');
-        var element1;
-        
-        var element1 = body[0];
-        
-        element.style.borderTop = "3px dotted #ff0000";
-    }
-
-
-}
-
 var linksimg = document.getElementsByTagName('img');
 var images;
 
@@ -66,5 +50,17 @@ for (var i = 0; i < linksimg.length; i++) {
     images = linksimg[i];
     if (!images.hasAttribute("alt") && !images.hasAttribute("class") ) {
         images.style.outline = "5px solid #0000ff";
+    }
+}
+
+// If title is BYU-Idaho or Vanilla Template it puts a red box around the page. 
+var titles = document.getElementsByTagName('title');
+for (var i = 0; i < links.length; i++) {
+    element = titles[i];
+    if (element.textContent == "BYU-Idaho" || element.textContent == "Vanilla Template") {
+        var body = document.getElementsByTagName('body');
+        var element1;
+        var element1 = body[0];
+        element1.style.border = "10px solid #00ffff";
     }
 }
