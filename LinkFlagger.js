@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     11
+// @version     12
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -29,7 +29,7 @@ for (var i = 0; i < links.length; i++) {
 // Flags links that don't open in new window
 for (var i = 0; i < links.length; i++) {
     element = links[i];
-    if (element.target.indexOf("_blank") !== 0 && !element.hasAttribute("class") && element.href.indexOf("javascript") !== 0 && !element.hasAttribute("name") && !element.hasAttribute("id"))  {
+    if (element.target.indexOf("_blank") !== 0 && !element.hasAttribute("class") && element.href.indexOf("javascript") !== 0 && !element.hasAttribute("name") && !element.hasAttribute("id") && !element.hasAttribute('role'))  {
         element.style.border = "3px dotted #ffaa00";
     }
 }
