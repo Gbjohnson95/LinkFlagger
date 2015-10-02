@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     12
+// @version     13
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -15,6 +15,7 @@ for (var i = 0; i < links.length; i++) {
     element = links[i];
     if (element.href.indexOf("https://byui.brainhoney") === 0) {
         element.style.color = "#ff0000";
+        element.setAttribute('title', 'This a iLearn 2.0 link and HAS TO be updated to iLearn 3.0. ');
     }
 }
 
@@ -23,6 +24,7 @@ for (var i = 0; i < links.length; i++) {
     element = links[i];
     if (element.href.indexOf("https://app.box") === 0) {
         element.style.color = "#ff0000";
+        element.setAttribute('title', 'This a Box link, Box has shut down functionality, Move to Equella. ');
     }
 }
 
@@ -31,6 +33,7 @@ for (var i = 0; i < links.length; i++) {
     element = links[i];
     if (element.target.indexOf("_blank") !== 0 && !element.hasAttribute("class") && element.href.indexOf("javascript") !== 0 && !element.hasAttribute("name") && !element.hasAttribute("id") && !element.hasAttribute('role'))  {
         element.style.border = "3px dotted #ffaa00";
+        element.setAttribute('title', 'This link does not open in a new window, and needs to. ');
     }
 }
 
@@ -42,6 +45,7 @@ for (var i = 0; i < linksimg.length; i++) {
     images = linksimg[i];
     if (images.src.indexOf("https://byui.brainhoney") === 0) {
         images.style.border = "5px solid #ff0000";
+        images.setAttribute('title', 'This Image is hosted by iLearn 2.0, and HAS TO be moved to iLearn 3.0. ');
     }
 }
 
