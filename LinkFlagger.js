@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     15
+// @version     17
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
 // @exclude     *brainhoney.com*
+// @run-at document-idle
 // ==/UserScript==
 
 var links = document.getElementsByTagName('a');
@@ -16,7 +17,7 @@ for (var i = 0; i < links.length; i++) {
     var newtitle = '';
 
     if (element.href.indexOf("https://byui.brainhoney") === 0) {
-        element.style.color = "#ff0000";
+        element.style.color = "#d9432f";
         if (element.title.indexOf('Issues') === 0) {
             var curtitle = '';
             curtitle = element.getAttribute('title');
@@ -33,7 +34,7 @@ for (var i = 0; i < links.length; i++) {
     element = links[i];
     var newtitle = '';
     if (element.href.indexOf("https://app.box") === 0) {
-        element.style.color = "#ff0000";
+        element.style.color = "#d9432f";
         if (element.title.indexOf('Issues') === 0) {
             var curtitle = '';
             curtitle = element.getAttribute('title');
@@ -49,8 +50,8 @@ for (var i = 0; i < links.length; i++) {
 for (var i = 0; i < links.length; i++) {
     element = links[i];
     var newtitle = '';
-    if (element.target.indexOf("_blank") !== 0 && !element.hasAttribute("class") && element.href.indexOf("javascript") !== 0 && !element.hasAttribute("name") && !element.hasAttribute("id") && !element.hasAttribute('role'))  {
-        element.style.border = "3px dotted #ffaa00";
+    if (element.target.indexOf("_blank") !== 0 && !element.hasAttribute("class") && element.href.indexOf("javascript") !== 0 && !element.hasAttribute("name") && !element.hasAttribute("id") && !element.hasAttribute('role') && !element.hasAttribute('style'))  {
+        element.style.border = "3px solid #ffb700";
         if (element.title.indexOf('Issues') === 0) {
             var curtitle = '';
             curtitle = element.getAttribute('title');
@@ -70,7 +71,7 @@ for (var i = 0; i < linksimg.length; i++) {
     images = linksimg[i];
     var newtitle = '';
     if (images.src.indexOf("https://byui.brainhoney") === 0) {
-        images.style.border = "5px solid #ff0000";
+        images.style.border = "5px solid #d9432f";
         if (images.title.indexOf('Issues') === 0) {
             var curtitle = '';
             curtitle = images.getAttribute('title');
@@ -87,7 +88,7 @@ for (var i = 0; i < linksimg.length; i++) {
     images = linksimg[i];
     var newtitle = '';
     if (!images.hasAttribute("alt") && !images.hasAttribute("class") ) {
-        images.style.outline = "5px solid #0000ff";
+        images.style.outline = "5px solid #176ced";
         if (images.title.indexOf('Issues') === 0) {
             var curtitle = '';
             curtitle = images.getAttribute('title');
@@ -99,14 +100,36 @@ for (var i = 0; i < linksimg.length; i++) {
     }
 }
 
-// If title is BYU-Idaho or Vanilla Template it puts a red box around the page. 
-var titles = document.getElementsByTagName('title');
-for (var i = 0; i < links.length; i++) {
-    element = titles[i];
-    if (element.textContent == "BYU-Idaho" || element.textContent == "Vanilla Template") {
-        var body = document.getElementsByTagName('body');
-        var element1;
-        var element1 = body[0];
-        element1.style.border = "10px solid #00ffff";
+// If the file path contains the word "Course Files" 
+var filediv = document.getElementsByClassName('d2l-fileviewer-text');
+var filepath;
+var filediv = document.getElementsByClassName('d2l-fileviewer-text');
+for (var i = 0; i < filediv.length; i++) {
+    element = filediv[i];
+    filepath = element.getAttribute('data-location');
+    
+    if (filepath.indexOf('Course%20Files') > -1) {
+        // Don't know how to make that statement inverted in javascript, so else it is for now. 
+    } else {
+        var body = document.getElementsByClassName('vui-breadcrumbs');
+        var element2;
+        var element2 = body[0];
+        element2.style.border = "3px solid #d9432f";
+        element2.setAttribute('title', 'Issues: The filepath doesn\'t have the words \'Course Files\'.' );
     }
+}
+
+// If title does not match the page title.  
+var iframe = document.getElementsByTagName('iframe')[0];
+var doc = iframe.contentWindow.document;
+var titles = doc.getElementsByTagName('title');
+var doctitles = document.getElementsByClassName("d2l-page-title");
+var titleelement = doctitles[0];
+var doctitle = titleelement.textContent;
+element = titles[0];
+var pagetitle = element.textContent;
+if (pagetitle !== doctitle) {
+    titleelement.style.border = "3px solid #176ced";
+    var newtitle = "Issues: The HTML title \"" + pagetitle + "\" does not match the document title \"" + doctitle + "\"";
+    titleelement.setAttribute('title', newtitle);
 }
