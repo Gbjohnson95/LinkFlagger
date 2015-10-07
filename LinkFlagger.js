@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     19
+// @version     20
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
