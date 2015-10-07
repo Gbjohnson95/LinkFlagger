@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     18
+// @version     19
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -13,10 +13,24 @@ var links = document.getElementsByTagName('a');
 var i;
 for (i = 0; i < links.length; i = i + 1) {
     var element = links[i];
-    var newtitle = '';
+    // START Flags Links That Dont Open In New Windows -------------------------------
+    if (element.target.indexOf("_blank") !== 0 && !element.hasAttribute("class") && element.href.indexOf("javascript") !== 0 && !element.hasAttribute("name") && !element.hasAttribute("id") && !element.hasAttribute('role') && !element.hasAttribute('style')) {
+        element.style.border = "3px solid #ffb700";
+        var newtitle = '';
+        if (element.title.indexOf('Issues') === 0) {
+            var curtitle = '';
+            curtitle = element.getAttribute('title');
+            newtitle = curtitle + 'This link does not open in a new window, ';
+        } else {
+            newtitle = 'Issues: This link does not open in a new window, ';
+        }
+        element.setAttribute('title', newtitle);
+    }
+    // END Flags Links That Dont Open In New Windows ---------------------------------
     // START Flags BrainHoney Links --------------------------------------------------
     if (element.href.indexOf("https://byui.brainhoney") === 0) {
         element.style.color = "#d9432f";
+        var newtitle = '';
         if (element.title.indexOf('Issues') === 0) {
             var curtitle = '';
             curtitle = element.getAttribute('title');
@@ -30,6 +44,7 @@ for (i = 0; i < links.length; i = i + 1) {
     // START Flags Box Links ---------------------------------------------------------
     if (element.href.indexOf("https://app.box") === 0) {
         element.style.color = "#d9432f";
+        var newtitle = '';
         if (element.title.indexOf('Issues') === 0) {
             var curtitle = '';
             curtitle = element.getAttribute('title');
@@ -40,19 +55,6 @@ for (i = 0; i < links.length; i = i + 1) {
         element.setAttribute('title', newtitle);
     }
     // END Flags Box Links -----------------------------------------------------------
-    // START Flags Links That Dont Open In New Windows -------------------------------
-    if (element.target.indexOf("_blank") !== 0 && !element.hasAttribute("class") && element.href.indexOf("javascript") !== 0 && !element.hasAttribute("name") && !element.hasAttribute("id") && !element.hasAttribute('role') && !element.hasAttribute('style')) {
-        element.style.border = "3px solid #ffb700";
-        if (element.title.indexOf('Issues') === 0) {
-            var curtitle = '';
-            curtitle = element.getAttribute('title');
-            newtitle = curtitle + 'This link does not open in a new window, ';
-        } else {
-            newtitle = 'Issues: This link does not open in a new window, ';
-        }
-        element.setAttribute('title', newtitle);
-    }
-    // END Flags Links That Dont Open In New Windows ---------------------------------
 }
 // END Links =========================================================================
 
@@ -112,15 +114,11 @@ for (var i = 0; i < filediv.length; i++) {
 window.onload = function () {
     var iframes = document.getElementsByTagName('iframe');
     for (i = 0; i < iframes.length; i = i + 1) {
-        alert("made it to the loop");
         iframe = iframes[i];
-        alert("selected iframe " + i);
         element = iframe.contentWindow.document.getElementsByTagName('title')[0];
         var pagetitle = element.textContent;
-        alert(pagetitle);
         var titleelement = document.getElementsByClassName("d2l-page-title")[0];
         var doctitle = titleelement.textContent;
-        alert(doctitle);
         if (pagetitle !== doctitle) {
             titleelement.style.border = "3px solid #176ced";
             newtitle = "Issues: The HTML title \"" + pagetitle + "\" does not match the document title \"" + doctitle + "\"";
