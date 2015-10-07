@@ -8,13 +8,13 @@
 // @run-at document-end
 // ==/UserScript==
 
-// Links =============================================================================
+// START Links =======================================================================
 var links = document.getElementsByTagName('a');
 var i;
 for (i = 0; i < links.length; i = i + 1) {
     var element = links[i];
     var newtitle = '';
-    // Flags BrainHoney Links --------------------------------------------------------
+    // START Flags BrainHoney Links --------------------------------------------------
     if (element.href.indexOf("https://byui.brainhoney") === 0) {
         element.style.color = "#d9432f";
         if (element.title.indexOf('Issues') === 0) {
@@ -26,8 +26,8 @@ for (i = 0; i < links.length; i = i + 1) {
         }
         element.setAttribute('title', newtitle);
     }
-    // Flags BrainHoney Links --------------------------------------------------------
-    // Flags Box Links ---------------------------------------------------------------
+    // END Flags BrainHoney Links ----------------------------------------------------
+    // START Flags Box Links ---------------------------------------------------------
     if (element.href.indexOf("https://app.box") === 0) {
         element.style.color = "#d9432f";
         if (element.title.indexOf('Issues') === 0) {
@@ -39,8 +39,8 @@ for (i = 0; i < links.length; i = i + 1) {
         }
         element.setAttribute('title', newtitle);
     }
-    // Flags Box Links ---------------------------------------------------------------
-    // Flags Links That Dont Open In New Windows -------------------------------------
+    // END Flags Box Links -----------------------------------------------------------
+    // START Flags Links That Dont Open In New Windows -------------------------------
     if (element.target.indexOf("_blank") !== 0 && !element.hasAttribute("class") && element.href.indexOf("javascript") !== 0 && !element.hasAttribute("name") && !element.hasAttribute("id") && !element.hasAttribute('role') && !element.hasAttribute('style')) {
         element.style.border = "3px solid #ffb700";
         if (element.title.indexOf('Issues') === 0) {
@@ -52,16 +52,16 @@ for (i = 0; i < links.length; i = i + 1) {
         }
         element.setAttribute('title', newtitle);
     }
-    // Flags Links That Dont Open In New Windows -------------------------------------
+    // END Flags Links That Dont Open In New Windows ---------------------------------
 }
-// Links =============================================================================
+// END Links =========================================================================
 
-// Images ============================================================================
+// START Images ======================================================================
 var linksimg = document.getElementsByTagName('img');
 for (i = 0; i < linksimg.length; i = i + 1) {
     var images = linksimg[i];
     var newtitle = '';
-    // Flags BrainHoney Images -------------------------------------------------------
+    // START Flags BrainHoney Images -------------------------------------------------
     if (images.src.indexOf("https://byui.brainhoney") === 0) {
         images.style.border = "5px solid #d9432f";
         if (images.title.indexOf('Issues') === 0) {
@@ -73,8 +73,8 @@ for (i = 0; i < linksimg.length; i = i + 1) {
         }
         images.setAttribute('title', newtitle);
     }
-    // Flags BrainHoney Images -------------------------------------------------------
-    // Flags Images Without Alt Attribute --------------------------------------------
+    // END Flags BrainHoney Images ---------------------------------------------------
+    // START Flags Images Without Alt Attribute --------------------------------------
     if (!images.hasAttribute("alt") && !images.hasAttribute("class")) {
         images.style.outline = "5px solid #176ced";
         if (images.title.indexOf('Issues') === 0) {
@@ -86,11 +86,11 @@ for (i = 0; i < linksimg.length; i = i + 1) {
         }
         images.setAttribute('title', newtitle);
     }
-    // Flags Images Without Alt Attribute --------------------------------------------
+    // END Flags Images Without Alt Attribute ----------------------------------------
 }
-// Images ============================================================================
+// END Images ========================================================================
 
-// File Path Checker =================================================================
+// START File Path Checker ===========================================================
 var filediv = document.getElementsByClassName('d2l-fileviewer-text');
 var filepath;
 for (var i = 0; i < filediv.length; i++) {
@@ -106,17 +106,26 @@ for (var i = 0; i < filediv.length; i++) {
         element2.setAttribute('title', 'Issues: The filepath doesn\'t have the words \'Course Files\'.' );
     }
 }
-// File Path Checker =================================================================
+// END File Path Checker =============================================================
 
-// Title Checker =====================================================================
-var iframe = document.getElementsByTagName('iframe')[0];
-element = iframe.contentWindow.document.getElementsByTagName('title')[0];
-var pagetitle = element.textContent;
-var titleelement = document.getElementsByClassName("d2l-page-title")[0];
-var doctitle = titleelement.textContent;
-if (pagetitle !== doctitle) {
-    titleelement.style.border = "3px solid #176ced";
-    newtitle = "Issues: The HTML title \"" + pagetitle + "\" does not match the document title \"" + doctitle + "\"";
-    titleelement.setAttribute('title', newtitle);
+// START Title Checker ===============================================================
+window.onload = function () {
+    var iframes = document.getElementsByTagName('iframe');
+    for (i = 0; i < iframes.length; i = i + 1) {
+        alert("made it to the loop");
+        iframe = iframes[i];
+        alert("selected iframe " + i);
+        element = iframe.contentWindow.document.getElementsByTagName('title')[0];
+        var pagetitle = element.textContent;
+        alert(pagetitle);
+        var titleelement = document.getElementsByClassName("d2l-page-title")[0];
+        var doctitle = titleelement.textContent;
+        alert(doctitle);
+        if (pagetitle !== doctitle) {
+            titleelement.style.border = "3px solid #176ced";
+            newtitle = "Issues: The HTML title \"" + pagetitle + "\" does not match the document title \"" + doctitle + "\"";
+            titleelement.setAttribute('title', newtitle);
+        }
+    }
 }
-// Title Checker =====================================================================
+// END Title Checker =================================================================
