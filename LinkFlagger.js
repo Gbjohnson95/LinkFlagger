@@ -7,7 +7,6 @@
 // @exclude     *brainhoney.com*
 // @run-at document-end
 // ==/UserScript==
-
 // START Links =======================================================================
 var links = document.getElementsByTagName('a');
 var i;
@@ -16,6 +15,7 @@ for (i = 0; i < links.length; i = i + 1) {
     // START Flags Links That Dont Open In New Windows -------------------------------
     if (element.target.indexOf("_blank") !== 0 && !element.hasAttribute("class") && element.href.indexOf("javascript") !== 0 && !element.hasAttribute("name") && !element.hasAttribute("id") && !element.hasAttribute('role') && !element.hasAttribute('style')) {
         element.style.border = "3px solid #ffb700";
+        element.style.fontWeight = "bold";
         var newtitle = '';
         if (element.title.indexOf('Issues') === 0) {
             var curtitle = '';
@@ -30,6 +30,7 @@ for (i = 0; i < links.length; i = i + 1) {
     // START Flags BrainHoney Links --------------------------------------------------
     if (element.href.indexOf("https://byui.brainhoney") === 0) {
         element.style.color = "#d9432f";
+        element.style.fontWeight = "bold";
         var newtitle = '';
         if (element.title.indexOf('Issues') === 0) {
             var curtitle = '';
@@ -44,6 +45,7 @@ for (i = 0; i < links.length; i = i + 1) {
     // START Flags Box Links ---------------------------------------------------------
     if (element.href.indexOf("https://app.box") === 0) {
         element.style.color = "#d9432f";
+        element.style.fontWeight = "bold";
         var newtitle = '';
         if (element.title.indexOf('Issues') === 0) {
             var curtitle = '';
@@ -57,7 +59,6 @@ for (i = 0; i < links.length; i = i + 1) {
     // END Flags Box Links -----------------------------------------------------------
 }
 // END Links =========================================================================
-
 // START Images ======================================================================
 var linksimg = document.getElementsByTagName('img');
 for (i = 0; i < linksimg.length; i = i + 1) {
@@ -91,7 +92,6 @@ for (i = 0; i < linksimg.length; i = i + 1) {
     // END Flags Images Without Alt Attribute ----------------------------------------
 }
 // END Images ========================================================================
-
 // START File Path Checker ===========================================================
 var filediv = document.getElementsByClassName('d2l-fileviewer-text');
 var filepath;
@@ -105,13 +105,12 @@ for (var i = 0; i < filediv.length; i++) {
         var element2;
         var element2 = body[0];
         element2.style.border = "3px solid #d9432f";
-        element2.setAttribute('title', 'Issues: The filepath doesn\'t have the words \'Course Files\'.' );
+        element2.setAttribute('title', 'Issues: The filepath doesn\'t have the words \'Course Files\'.');
     }
 }
 // END File Path Checker =============================================================
-
 // START Title Checker ===============================================================
-window.onload = function () {
+window.onload = function() {
     var iframes = document.getElementsByTagName('iframe');
     for (i = 0; i < iframes.length; i = i + 1) {
         iframe = iframes[i];
@@ -125,5 +124,5 @@ window.onload = function () {
             titleelement.setAttribute('title', newtitle);
         }
     }
-}
+};
 // END Title Checker =================================================================
