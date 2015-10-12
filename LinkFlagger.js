@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     20
+// @version     22
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -9,16 +9,17 @@
 // ==/UserScript==
 // START Links =======================================================================
 var links = document.getElementsByTagName('a');
-var i;
-for (i = 0; i < links.length; i = i + 1) {
+for (var i = 0; i < links.length; i = i + 1) {
     var element = links[i];
+    var curtitle;
+    var newtitle;
     // START Flags Links That Dont Open In New Windows -------------------------------
     if (element.target.indexOf("_blank") !== 0 && !element.hasAttribute("class") && element.href.indexOf("javascript") !== 0 && !element.hasAttribute("name") && !element.hasAttribute("id") && !element.hasAttribute('role') && !element.hasAttribute('style')) {
         element.style.border = "3px solid #ffb700";
         element.style.fontWeight = "bold";
-        var newtitle = '';
+        newtitle = '';
         if (element.title.indexOf('Issues') === 0) {
-            var curtitle = '';
+            curtitle = '';
             curtitle = element.getAttribute('title');
             newtitle = curtitle + 'This link does not open in a new window, ';
         } else {
@@ -33,7 +34,7 @@ for (i = 0; i < links.length; i = i + 1) {
         element.style.fontWeight = "bold";
         var newtitle = '';
         if (element.title.indexOf('Issues') === 0) {
-            var curtitle = '';
+            curtitle = '';
             curtitle = element.getAttribute('title');
             newtitle = curtitle + 'This is an iLearn 2.0 link, ';
         } else {
@@ -46,9 +47,9 @@ for (i = 0; i < links.length; i = i + 1) {
     if (element.href.indexOf("https://app.box") === 0) {
         element.style.color = "#d9432f";
         element.style.fontWeight = "bold";
-        var newtitle = '';
+        newtitle = '';
         if (element.title.indexOf('Issues') === 0) {
-            var curtitle = '';
+            curtitle = '';
             curtitle = element.getAttribute('title');
             newtitle = curtitle + 'This a Box link, ';
         } else {
@@ -63,12 +64,13 @@ for (i = 0; i < links.length; i = i + 1) {
 var linksimg = document.getElementsByTagName('img');
 for (i = 0; i < linksimg.length; i = i + 1) {
     var images = linksimg[i];
-    var newtitle = '';
+    newtitle = '';
+    var curtitle;
     // START Flags BrainHoney Images -------------------------------------------------
     if (images.src.indexOf("https://byui.brainhoney") === 0) {
         images.style.border = "5px solid #d9432f";
         if (images.title.indexOf('Issues') === 0) {
-            var curtitle = '';
+            curtitle = '';
             curtitle = images.getAttribute('title');
             newtitle = curtitle + 'This Image is hosted by iLearn 2.0, ';
         } else {
@@ -81,7 +83,7 @@ for (i = 0; i < linksimg.length; i = i + 1) {
     if (!images.hasAttribute("alt") && !images.hasAttribute("class")) {
         images.style.outline = "5px solid #176ced";
         if (images.title.indexOf('Issues') === 0) {
-            var curtitle = '';
+            curtitle = '';
             curtitle = images.getAttribute('title');
             newtitle = curtitle + 'This Image has no alt text, ';
         } else {
@@ -122,6 +124,40 @@ window.onload = function() {
             titleelement.style.border = "3px solid #176ced";
             newtitle = "Issues: The HTML title \"" + pagetitle + "\" does not match the document title \"" + doctitle + "\"";
             titleelement.setAttribute('title', newtitle);
+        }
+        var spans = iframe.contentWindow.document.getElementsByTagName('span');
+        var span;
+        for (var h = 0; h < spans.length; h = h + 1) {
+            span = spans[h];
+            if (span.style.fontWeight == 'bold') {
+                span.style.border = "3px solid #d9432f";
+                newtitle = '';
+                if (span.title.indexOf('Issues') === 0) {
+                    var curtitle = '';
+                    curtitle = span.getAttribute('title');
+                    newtitle = curtitle + 'Embeded font-weight, ';
+                } else {
+                    newtitle = 'Issues: Embeded font-weight, ';
+                }
+                span.setAttribute('title', newtitle);
+            }
+        }
+        var ps = iframe.contentWindow.document.getElementsByTagName('p');
+        var p;
+        for (var h = 0; h < spans.length; h = h + 1) {
+            p = ps[h];
+            if (p.style.fontWeight == 'bold') {
+                p.style.border = "3px solid #d9432f";
+                newtitle = '';
+                if (p.title.indexOf('Issues') === 0) {
+                    curtitle = '';
+                    curtitle = p.getAttribute('title');
+                    newtitle = curtitle + 'Embeded font-weight, ';
+                } else {
+                    newtitle = 'Issues: Embeded font-weight, ';
+                }
+                p.setAttribute('title', newtitle);
+            }
         }
     }
 };
