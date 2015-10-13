@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     24
+// @version     23
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -118,11 +118,12 @@ for (var i = 0; i < filediv.length; i++) {
     }
 }
 // END File Path Checker =============================================================
-// START Title Checker ===============================================================
+// START iFrame Checker ==============================================================
 window.onload = function() {
     var iframes = document.getElementsByTagName('iframe');
     for (i = 0; i < iframes.length; i = i + 1) {
         iframe = iframes[i];
+        // START Title Checker -------------------------------------------------------
         var newtitle;
         element = iframe.contentWindow.document.getElementsByTagName('title')[0];
         var pagetitle = element.textContent;
@@ -134,6 +135,8 @@ window.onload = function() {
             newtitle = "Issues: The HTML title \"" + pagetitle + "\" does not match the document title \"" + doctitle + "\"";
             titleelement.setAttribute('title', newtitle);
         }
+        // END Title Checker ---------------------------------------------------------
+        // START Bold Checker --------------------------------------------------------
         var spans = iframe.contentWindow.document.getElementsByTagName('span');
         var span;
         var curtitle1;
@@ -171,6 +174,7 @@ window.onload = function() {
                 p.setAttribute('title', newtitle);
             }
         }
+        // END Bold Checker ----------------------------------------------------------
     }
 };
-// END Title Checker =================================================================
+// END iFrame Checker ================================================================
