@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     22
+// @version     24
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -16,6 +16,7 @@ for (var i = 0; i < links.length; i = i + 1) {
     // START Flags Links That Dont Open In New Windows -------------------------------
     if (element.target.indexOf("_blank") !== 0 && !element.hasAttribute("class") && element.href.indexOf("javascript") !== 0 && !element.hasAttribute("name") && !element.hasAttribute("id") && !element.hasAttribute('role') && !element.hasAttribute('style')) {
         element.style.border = "3px solid #ffb700";
+        element.style.background = "repeating-linear-gradient(135deg, #FFE0B2, #FFE0B2 5px, #ffffff 5px, #ffffff 10px)";
         element.style.fontWeight = "bold";
         newtitle = '';
         if (element.title.indexOf('Issues') === 0) {
@@ -31,6 +32,8 @@ for (var i = 0; i < links.length; i = i + 1) {
     // START Flags BrainHoney Links --------------------------------------------------
     if (element.href.indexOf("https://byui.brainhoney") === 0) {
         element.style.color = "#d9432f";
+        element.style.outline = "3px solid #d9432f";
+        element.style.background = "repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)";
         element.style.fontWeight = "bold";
         var newtitle = '';
         if (element.title.indexOf('Issues') === 0) {
@@ -46,6 +49,8 @@ for (var i = 0; i < links.length; i = i + 1) {
     // START Flags Box Links ---------------------------------------------------------
     if (element.href.indexOf("https://app.box") === 0) {
         element.style.color = "#d9432f";
+        element.style.outline = "3px solid #d9432f";
+        element.style.background = "repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)";
         element.style.fontWeight = "bold";
         newtitle = '';
         if (element.title.indexOf('Issues') === 0) {
@@ -66,6 +71,7 @@ for (i = 0; i < linksimg.length; i = i + 1) {
     var images = linksimg[i];
     newtitle = '';
     var curtitle;
+
     // START Flags BrainHoney Images -------------------------------------------------
     if (images.src.indexOf("https://byui.brainhoney") === 0) {
         images.style.border = "5px solid #d9432f";
@@ -107,6 +113,7 @@ for (var i = 0; i < filediv.length; i++) {
         var element2;
         var element2 = body[0];
         element2.style.border = "3px solid #d9432f";
+        element2.style.background = "repeating-linear-gradient(45deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)";
         element2.setAttribute('title', 'Issues: The filepath doesn\'t have the words \'Course Files\'.');
     }
 }
@@ -116,26 +123,30 @@ window.onload = function() {
     var iframes = document.getElementsByTagName('iframe');
     for (i = 0; i < iframes.length; i = i + 1) {
         iframe = iframes[i];
+        var newtitle;
         element = iframe.contentWindow.document.getElementsByTagName('title')[0];
         var pagetitle = element.textContent;
         var titleelement = document.getElementsByClassName("d2l-page-title")[0];
         var doctitle = titleelement.textContent;
-        if (pagetitle !== doctitle) {
+        if (pagetitle != doctitle) {
             titleelement.style.border = "3px solid #176ced";
+            titleelement.style.background = "repeating-linear-gradient(135deg, #BBDEFB, #BBDEFB 5px, #ffffff 5px, #ffffff 10px)";
             newtitle = "Issues: The HTML title \"" + pagetitle + "\" does not match the document title \"" + doctitle + "\"";
             titleelement.setAttribute('title', newtitle);
         }
         var spans = iframe.contentWindow.document.getElementsByTagName('span');
         var span;
+        var curtitle1;
         for (var h = 0; h < spans.length; h = h + 1) {
             span = spans[h];
             if (span.style.fontWeight == 'bold') {
-                span.style.border = "3px solid #d9432f";
+                span.style.outline = "3px solid #689F38";
+                span.style.background = "repeating-linear-gradient(45deg, #DCEDC8, #DCEDC8 5px, #ffffff 5px, #ffffff 10px)";
                 newtitle = '';
                 if (span.title.indexOf('Issues') === 0) {
-                    var curtitle = '';
-                    curtitle = span.getAttribute('title');
-                    newtitle = curtitle + 'Embeded font-weight, ';
+                    curtitle1 = '';
+                    curtitle1 = span.getAttribute('title');
+                    newtitle = curtitle1 + 'Embeded font-weight, ';
                 } else {
                     newtitle = 'Issues: Embeded font-weight, ';
                 }
@@ -144,15 +155,16 @@ window.onload = function() {
         }
         var ps = iframe.contentWindow.document.getElementsByTagName('p');
         var p;
-        for (var h = 0; h < spans.length; h = h + 1) {
+        for (h = 0; h < spans.length; h = h + 1) {
             p = ps[h];
             if (p.style.fontWeight == 'bold') {
-                p.style.border = "3px solid #d9432f";
+                p.style.outline = "3px solid #689F38";
+                p.style.background = "repeating-linear-gradient(45deg, #DCEDC8, #DCEDC8 5px, #ffffff 5px, #ffffff 10px)";
                 newtitle = '';
                 if (p.title.indexOf('Issues') === 0) {
-                    curtitle = '';
-                    curtitle = p.getAttribute('title');
-                    newtitle = curtitle + 'Embeded font-weight, ';
+                    curtitle1 = '';
+                    curtitle1 = p.getAttribute('title');
+                    newtitle = curtitle1 + 'Embeded font-weight, ';
                 } else {
                     newtitle = 'Issues: Embeded font-weight, ';
                 }
