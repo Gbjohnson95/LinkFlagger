@@ -25,14 +25,14 @@ window.addEventListener("load", function () {
         dctitle = document.querySelector("h1[class*='d2l-page-title']"); // Gets the D2l page title
         allbold = ciframe[0].contentWindow.document.querySelectorAll("[style*='bold']"); // Gets all bold elements
 
-        flagbhlinks();
-        flagbxlinks();
-        flagatlinks();
-        flagbhimage();
-        flagalimage();
-        flagflepath();
-        flagtitle();
-        flagbold();
+        flagbhlinks(); // Flags BrainHoney Links
+        flagbxlinks(); // Flags Box Links
+        flagatlinks(); // Flags Links that dont open in new windows
+        flagbhimage(); // Flags BrainHoney Images
+        flagalimage(); // Flags Images withough Alt tags
+        flagflepath(); // Flags Incorrect File Paths
+        flagtitle();   // Flags Incorrect Titles
+        flagbold();    // Flags Embeded Font-weight
     }
 
     // Flag BrainHoney links
