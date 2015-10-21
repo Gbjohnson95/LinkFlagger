@@ -13,26 +13,28 @@ window.addEventListener("load", function () {
 
     var bhlinks, bxlinks, atlinks, bhimage, alimage, httitle, flepath, dctitle, allbold, pathdiv;
 
-    if (ciframe.length == 1) { // When the frame with the frame with the iframe loads
-        bhlinks = ciframe[0].contentWindow.document.querySelectorAll("a[href*='brainhoney']"); // BrainHoney Links
-        bxlinks = ciframe[0].contentWindow.document.querySelectorAll("a[href*='box'"); // Box Links
-        atlinks = ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])"); // Links that do not open in new windows
-        bhimage = ciframe[0].contentWindow.document.querySelectorAll("img[src*='brainhoney']"); // BrainHoney Images
-        alimage = ciframe[0].contentWindow.document.querySelectorAll("img:not([alt])"); // Images without alt text
-        flepath = document.querySelector("div[class*='d2l-fileviewer-text']"); // Gets File path
-        pathdiv = document.querySelector("ol[class*='vui-breadcrumbs']");
-        httitle = ciframe[0].contentWindow.document.querySelector("title"); // Gets the title out of the doc
-        dctitle = document.querySelector("h1[class*='d2l-page-title']"); // Gets the D2l page title
-        allbold = ciframe[0].contentWindow.document.querySelectorAll("[style*='bold']"); // Gets all bold elements
+    dctitle = document.querySelector("h1[class*='d2l-page-title']"); // Get the page title.
+    if (dctitle.textContent != "Edit HTML File") { // If the page is editable, dont run.
+        if (ciframe.length == 1) { // When the frame with the frame with the iframe loads
+            bhlinks = ciframe[0].contentWindow.document.querySelectorAll("a[href*='brainhoney']"); // BrainHoney Links
+            bxlinks = ciframe[0].contentWindow.document.querySelectorAll("a[href*='box'"); // Box Links
+            atlinks = ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])"); // Links that do not open in new windows
+            bhimage = ciframe[0].contentWindow.document.querySelectorAll("img[src*='brainhoney']"); // BrainHoney Images
+            alimage = ciframe[0].contentWindow.document.querySelectorAll("img:not([alt])"); // Images without alt text
+            flepath = document.querySelector("div[class*='d2l-fileviewer-text']"); // Gets File path
+            pathdiv = document.querySelector("ol[class*='vui-breadcrumbs']");
+            httitle = ciframe[0].contentWindow.document.querySelector("title"); // Gets the title out of the doc
+            allbold = ciframe[0].contentWindow.document.querySelectorAll("[style*='bold']"); // Gets all bold elements
 
-        flagbhlinks(); // Flags BrainHoney Links
-        flagbxlinks(); // Flags Box Links
-        flagatlinks(); // Flags Links that dont open in new windows
-        flagbhimage(); // Flags BrainHoney Images
-        flagalimage(); // Flags Images withough Alt tags
-        flagflepath(); // Flags Incorrect File Paths
-        flagtitle();   // Flags Incorrect Titles
-        flagbold();    // Flags Embeded Font-weight
+            flagbhlinks();
+            flagbxlinks();
+            flagatlinks();
+            flagbhimage();
+            flagalimage();
+            flagflepath();
+            flagtitle();
+            flagbold();
+        }
     }
 
     // Flag BrainHoney links
