@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger (v2)
-// @version     24
+// @version     25
 // @author      Grant Johnson
 // @description Flags common mistakes
 // @include     *brightspace.com*
@@ -10,6 +10,10 @@
 window.addEventListener("load", function () {
 
     var ciframe = document.getElementsByTagName('iframe');
+
+    if (document.querySelector("title").innerHTML == "Login - Brigham Young University - Idaho") {
+           starwarscountdown();
+    }
     
     if (ciframe.length == 1) { // When the frame with the frame with the iframe loads
         dctitle = document.querySelector("h1[class*='d2l-page-title']"); // Get the page title.
@@ -112,7 +116,7 @@ window.addEventListener("load", function () {
     function seterrortitle(element, titletext) {
         var newtitle = '';
         var curtitle = '';
-        if (element != undefined) {
+        if (element !== undefined) {
             if (element.title.indexOf('Issues') === 0) {
                 curtitle = '';
                 curtitle = element.getAttribute('title');
@@ -121,6 +125,26 @@ window.addEventListener("load", function () {
                 newtitle = 'Issues: ' + titletext;
             }
             element.setAttribute('title', newtitle);
+        }
+    }
+
+    function starwarscountdown() {
+        var title = document.querySelector("title");
+        if (title.innerHTML == "Login - Brigham Young University - Idaho") {
+            var target_date = new Date("Dec 17 2015 20:00:00 GMT-0600").getTime();
+            var days, hours, minutes, seconds;
+            var countdown = document.querySelector("h1[class*='d2l-login-portal-heading']");
+            setInterval(function () {
+                var current_date = new Date().getTime();
+                var seconds_left = (target_date - current_date) / 1000;
+                days = parseInt(seconds_left / 86400);
+                seconds_left = seconds_left % 86400;
+                hours = parseInt(seconds_left / 3600);
+                seconds_left = seconds_left % 3600;
+                minutes = parseInt(seconds_left / 60);
+                seconds = parseInt(seconds_left % 60);
+                countdown.innerHTML = "THE FORCE AWAKENS IN - " + days + "d, " + hours + "h, " + minutes + "m, " + seconds + "s";
+            }, 1000);
         }
     }
 });
