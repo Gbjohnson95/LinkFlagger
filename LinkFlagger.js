@@ -1,32 +1,32 @@
 // ==UserScript==
-// @name        LinkFlagger (v2)
-// @version     25
+// @name        LinkFlagger
+// @version     31
 // @author      Grant Johnson
-// @description Flags common mistakes
+// @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
 // @exclude     *brainhoney.com*
 // @run-at document-end
 // ==/UserScript==
 window.addEventListener("load", function () {
 
-    var ciframe = document.getElementsByTagName('iframe');
-
     if (document.querySelector("title").innerHTML == "Login - Brigham Young University - Idaho") {
-           starwarscountdown();
+        starwarscountdown();
+        //hypnotoad();
     }
-    
-    if (ciframe.length == 1) { // When the frame with the frame with the iframe loads
+
+    var ciframe = document.querySelectorAll("iframe[class*='d2l-iframe']");
+    if (ciframe.length > 0) {
         dctitle = document.querySelector("h1[class*='d2l-page-title']"); // Get the page title.
-        if (dctitle.textContent != "Edit HTML File") { // If the page is editable, dont run.
-            flagbhlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='brainhoney']"));                                         // Flag BrainHoney Links
-            flagbxlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='box'"));                                                 // Flag Box Links
-            flagatlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])"));                                      // Flag Links that do not open in new windows
-            flagbhimage(ciframe[0].contentWindow.document.querySelectorAll("img[src*='brainhoney']"));                                        // Flag BrainHoney Images
-            flagalimage(ciframe[0].contentWindow.document.querySelectorAll("img:not([alt])"));                                                // Flag Images without alt text
-            flagflepath(document.querySelector("div[class*='d2l-fileviewer-text']"), document.querySelector("ol[class*='vui-breadcrumbs']")); // Checks File path
-            flagpgtitle(document.querySelector("h1[class*='d2l-page-title']"), ciframe[0].contentWindow.document.querySelector("title"));     // Checks the titles
-            flagallbold(ciframe[0].contentWindow.document.querySelectorAll("[style*='bold']"));                                               // Flags all bold elements
-        }
+        flagbhlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='brainhoney.com']"));                                         // Flag BrainHoney Links
+        flagbxlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='box.com'"));                                                 // Flag Box Links
+        flagatlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])"));                                      // Flag Links that do not open in new windows
+        flagemlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([href])"));                                                 // Flag Links that 
+        flagemlinks(ciframe[0].contentWindow.document.querySelectorAll("a:empty"));
+        flagbhimage(ciframe[0].contentWindow.document.querySelectorAll("img[src*='brainhoney']"));                                        // Flag BrainHoney Images
+        flagalimage(ciframe[0].contentWindow.document.querySelectorAll("img:not([alt])"));                                                // Flag Images without alt text
+        flagallbold(ciframe[0].contentWindow.document.querySelectorAll("[style*='bold']"));                                               // Flags all bold elements
+        flagflepath(document.querySelector("div[class*='d2l-fileviewer-text']"), document.querySelector("ol[class*='vui-breadcrumbs']")); // Checks File path
+        flagpgtitle(document.querySelector("h1[class*='d2l-page-title']"), ciframe[0].contentWindow.document.querySelector("title"));     // Checks the titles
     }
 
     // Flag BrainHoney links
@@ -61,12 +61,21 @@ window.addEventListener("load", function () {
         }
     }
 
+    // Flag Links with empty attributes
+    function flagemlinks(emlinks) {
+        var i;
+        for (i = 0; i < emlinks.length; i++) {
+            emlinks[i].style.border = "3px solid #0057e7";
+            seterrortitle(emlinks[i], 'This link has an empty href or text, ');
+        }
+    }
+
     // Flag BrainHoney images
     function flagbhimage(bhimage) {
         var i;
         for (i = 0; i < bhimage.length; i++) {
             bhimage[i].style.border = "5px solid #d9432f";
-            seterrortitle(bhimage[i], 'This link does not open in a new window, ');
+            seterrortitle(bhimage[i], 'This image is from BrainHoney, ');
         }
     }
 
@@ -143,8 +152,23 @@ window.addEventListener("load", function () {
                 seconds_left = seconds_left % 3600;
                 minutes = parseInt(seconds_left / 60);
                 seconds = parseInt(seconds_left % 60);
-                countdown.innerHTML = "THE FORCE AWAKENS IN - " + days + "d, " + hours + "h, " + minutes + "m, " + seconds + "s";
+                countdown.innerHTML = "THE FORCE AWAKENS IN<br />" + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+                countdown.style.fontWeight = "bold";
+                countdown.style.color = "#FFE81F";
+                countdown.style.textAlign = "center";
+                countdown.style.fontSize = "75px";
+                countdown.style.textShadow = "0 0 5px #000000";
             }, 1000);
         }
+    }
+
+    function hypnotoad() {
+        var countdown = document.querySelector("h1[class*='d2l-login-portal-heading']");
+        countdown.innerHTML = 'ALL GLORY TO THE BRIGHTSPACE<br /><iframe width="830" height="479" src="https://www.youtube.com/embed/t9eIL3bauuw?autoplay=1;autohide=1&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>';
+        countdown.style.fontWeight = "bold";
+        countdown.style.color = "#000000";
+        countdown.style.textAlign = "center";
+        countdown.style.fontSize = "75px";
+
     }
 });
