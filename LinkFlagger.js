@@ -14,42 +14,12 @@ window.addEventListener("load", function () {
         starwarscountdown();
         //hypnotoad();
     }
-    
+
     var ciframe = document.querySelectorAll("iframe");
     if (ciframe.length > 0) {
         dctitle = document.querySelector("h1[class*='d2l-page-title']"); // Get the page title.
         if (dctitle.textContent == "Edit HTML File") {
-            var bs    = ciframe[0].contentWindow.document.querySelectorAll("b");
-            var is    = ciframe[0].contentWindow.document.querySelectorAll("i");
-            var brs   = ciframe[0].contentWindow.document.querySelectorAll("br");
-            var divs  = ciframe[0].contentWindow.document.querySelectorAll("div:not([id])");
-            var bolds = ciframe[0].contentWindow.document.querySelectorAll("span[style*='bold']");
-            var spans = ciframe[0].contentWindow.document.querySelectorAll("span:not([style])");
-            var as    = ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])");
-            var empty = ciframe[0].contentWindow.document.querySelectorAll("p:empty, strong:empty, em:empty, a:empty, br");
-            var numfixes =  bs.length + is.length + divs.length + bolds.length + spans.length + as.length + empty.length;
-            $( "input[name='topicTitle']" ).after( '<button type="button" id="fixstuff" style="margin-right: 10px" >Fix ' + numfixes + ' issues</button>' );
-            document.getElementById("fixstuff").addEventListener("click", function(){
-                $(bs).contents().unwrap().wrap('<strong/>');
-                $(is).contents().unwrap().wrap('<em/>');
-                $(divs).contents().unwrap().wrap('<p/>');
-                $(bolds).contents().unwrap().wrap('<strong/>');
-                $(spans).contents().unwrap();
-                $(as).attr("target","_blank");
-                $(empty).remove();
-                if (numfixes > 0) {
-                    alert("Number of <b>s fixed: "              + bs.length 
-                          + "\nNumber of <i>s fixed: "              + is.length
-                          + "\nNumber of <div>s replaced: "         + divs.length
-                          + "\nNumber of bolded <span>s replaced: " + bolds.length
-                          + "\nNumber of <span>s removed: "         + spans.length 
-                          + "\nNumber of Bad <a>s targets fixed: "  + as.length
-                          + "\nNumber of empty Elements removed: "  + empty.length
-                          + "\n\nWritten By Grant Johnson");
-                } else {
-                    alert("Nothing fixed");
-                }
-            });
+            fixIssues();
         } else if ( ciframe[0].getAttribute('class').includes('d2l-iframe') ) {
             flagbhlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='brainhoney.com']"));                                     // Flag BrainHoney Links
             flagbxlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='box.com'"));                                             // Flag Box Links
@@ -63,6 +33,43 @@ window.addEventListener("load", function () {
             flagpgtitle(document.querySelector("h1[class*='d2l-page-title']"), ciframe[0].contentWindow.document.querySelector("title"));     // Checks the titles*/
         }
     }
+
+    function fixIssues() {
+        var bs    = ciframe[0].contentWindow.document.querySelectorAll("b");
+        var is    = ciframe[0].contentWindow.document.querySelectorAll("i");
+        var brs   = ciframe[0].contentWindow.document.querySelectorAll("br");
+        var divs  = ciframe[0].contentWindow.document.querySelectorAll("div:not([id])");
+        var bolds = ciframe[0].contentWindow.document.querySelectorAll("span[style*='bold']");
+        var spans = ciframe[0].contentWindow.document.querySelectorAll("span:not([style])");
+        var as    = ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])");
+        var empty = ciframe[0].contentWindow.document.querySelectorAll("p:empty, strong:empty, em:empty, a:empty, br");
+        var numfixes =  bs.length + is.length + divs.length + bolds.length + spans.length + as.length + empty.length;
+        $( "input[name='topicTitle']" ).after( '<button type="button" id="fixstuff" style="margin-right: 10px" >BETA: Fix ' + numfixes + ' issues</button>' );
+        var button = ciframe[0].contentWindow.document.querySelectorAll("button[id*='fixstuff']")[0];
+        document.getElementById("fixstuff").addEventListener("click", function(){
+            $(bs).contents().unwrap().wrap('<strong/>');
+            $(is).contents().unwrap().wrap('<em/>');
+            $(divs).contents().unwrap().wrap('<p/>');
+            $(bolds).contents().unwrap().wrap('<strong/>');
+            $(spans).contents().unwrap();
+            $(as).attr("target","_blank");
+            $(empty).remove();
+            if (numfixes > 0) {
+                alert("Number of <b>s fixed: "                  + bs.length 
+                      + "\nNumber of <i>s fixed: "              + is.length
+                      + "\nNumber of <div>s replaced: "         + divs.length
+                      + "\nNumber of bolded <span>s replaced: " + bolds.length
+                      + "\nNumber of <span>s removed: "         + spans.length 
+                      + "\nNumber of Bad <a>s targets fixed: "  + as.length
+                      + "\nNumber of empty Elements removed: "  + empty.length
+                      + "\n\nWritten By Grant Johnson");
+
+            } else {
+                alert("Nothing fixed");
+            }
+        });
+    }
+
     // Flag BrainHoney links
     function flagbhlinks(bhlinks) {
         var i;
@@ -125,12 +132,10 @@ window.addEventListener("load", function () {
     // Check the filepath
     function flagflepath(flepath, pathdiv) {
         var fpath = flepath.getAttribute('data-location');
-        if (fpath.indexOf('Course%20Files') > -1) {
-
-        } else {
+        if (!fpath.includes('%20Files')) {
             pathdiv.style.border = "3px solid #d9432f";
             pathdiv.style.background = "repeating-linear-gradient(45deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)";
-            seterrortitle(pathdiv, 'The filepath doesn\'t have the words \'Course Files\'.');
+            seterrortitle(pathdiv, 'The filepath doesn\'t have the words \'Course Files\' or \'Content Files\'.');
         }
     }
 
