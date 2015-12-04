@@ -44,8 +44,8 @@ window.addEventListener("load", function () {
         var as    = ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])");
         var empty = ciframe[0].contentWindow.document.querySelectorAll("p:empty, strong:empty, em:empty, a:empty, br");
         var numfixes =  bs.length + is.length + divs.length + bolds.length + spans.length + as.length + empty.length;
-        $( "input[name='topicTitle']" ).after( '<button type="button" id="fixstuff" style="margin-right: 10px" >BETA: Fix ' + numfixes + ' issues</button>' );
-        var button = ciframe[0].contentWindow.document.querySelectorAll("button[id*='fixstuff']")[0];
+        $( "div[class*='d2l-left d2l-inline']" ).after( '<a type="button" class="d2l-button vui-button" id="fixstuff" ><strong>BETA:</strong> Fix ' + numfixes + ' issues</a>' );
+        var button = ciframe[0].contentWindow.document.querySelectorAll("a[id*='fixstuff']")[0];
         document.getElementById("fixstuff").addEventListener("click", function(){
             $(bs).contents().unwrap().wrap('<strong/>');
             $(is).contents().unwrap().wrap('<em/>');
@@ -64,6 +64,8 @@ window.addEventListener("load", function () {
                       + "\nNumber of empty Elements removed: "  + empty.length
                       + "\n\nWritten By Grant Johnson");
 
+                $("a[id*='fixstuff']").text(numfixes + " Issues fixed!");
+                
             } else {
                 alert("Nothing fixed");
             }
