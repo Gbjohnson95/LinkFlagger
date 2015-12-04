@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     31
+// @version     32
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
 // @exclude     *brainhoney.com*
+// @require     http://code.jquery.com/jquery-latest.js
 // @run-at document-end
 // ==/UserScript==
 window.addEventListener("load", function () {
@@ -13,22 +14,55 @@ window.addEventListener("load", function () {
         starwarscountdown();
         //hypnotoad();
     }
-
-    var ciframe = document.querySelectorAll("iframe[class*='d2l-iframe']");
+    
+    var ciframe = document.querySelectorAll("iframe");
     if (ciframe.length > 0) {
         dctitle = document.querySelector("h1[class*='d2l-page-title']"); // Get the page title.
-        flagbhlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='brainhoney.com']"));                                         // Flag BrainHoney Links
-        flagbxlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='box.com'"));                                                 // Flag Box Links
-        flagatlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])"));                                      // Flag Links that do not open in new windows
-        flagemlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([href])"));                                                 // Flag Links that 
-        flagemlinks(ciframe[0].contentWindow.document.querySelectorAll("a:empty"));
-        flagbhimage(ciframe[0].contentWindow.document.querySelectorAll("img[src*='brainhoney']"));                                        // Flag BrainHoney Images
-        flagalimage(ciframe[0].contentWindow.document.querySelectorAll("img:not([alt])"));                                                // Flag Images without alt text
-        flagallbold(ciframe[0].contentWindow.document.querySelectorAll("[style*='bold']"));                                               // Flags all bold elements
-        flagflepath(document.querySelector("div[class*='d2l-fileviewer-text']"), document.querySelector("ol[class*='vui-breadcrumbs']")); // Checks File path
-        flagpgtitle(document.querySelector("h1[class*='d2l-page-title']"), ciframe[0].contentWindow.document.querySelector("title"));     // Checks the titles
+        if (dctitle.textContent == "Edit HTML File") {
+            var bs    = ciframe[0].contentWindow.document.querySelectorAll("b");
+            var is    = ciframe[0].contentWindow.document.querySelectorAll("i");
+            var brs   = ciframe[0].contentWindow.document.querySelectorAll("br");
+            var divs  = ciframe[0].contentWindow.document.querySelectorAll("div:not([id])");
+            var bolds = ciframe[0].contentWindow.document.querySelectorAll("span[style*='bold']");
+            var spans = ciframe[0].contentWindow.document.querySelectorAll("span:not([style])");
+            var as    = ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])");
+            var empty = ciframe[0].contentWindow.document.querySelectorAll("p:empty, strong:empty, em:empty, a:empty, br");
+            var numfixes =  bs.length + is.length + divs.length + bolds.length + spans.length + as.length + empty.length;
+            $( "input[name='topicTitle']" ).after( '<button type="button" id="fixstuff" style="margin-right: 10px" >Fix ' + numfixes + ' issues</button>' );
+            document.getElementById("fixstuff").addEventListener("click", function(){
+                $(bs).contents().unwrap().wrap('<strong/>');
+                $(is).contents().unwrap().wrap('<em/>');
+                $(divs).contents().unwrap().wrap('<p/>');
+                $(bolds).contents().unwrap().wrap('<strong/>');
+                $(spans).contents().unwrap();
+                $(as).attr("target","_blank");
+                $(empty).remove();
+                if (numfixes > 0) {
+                    alert("Number of <b>s fixed: "              + bs.length 
+                          + "\nNumber of <i>s fixed: "              + is.length
+                          + "\nNumber of <div>s replaced: "         + divs.length
+                          + "\nNumber of bolded <span>s replaced: " + bolds.length
+                          + "\nNumber of <span>s removed: "         + spans.length 
+                          + "\nNumber of Bad <a>s targets fixed: "  + as.length
+                          + "\nNumber of empty Elements removed: "  + empty.length
+                          + "\n\nWritten By Grant Johnson");
+                } else {
+                    alert("Nothing fixed");
+                }
+            });
+        } else if ( ciframe[0].getAttribute('class').includes('d2l-iframe') ) {
+            flagbhlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='brainhoney.com']"));                                     // Flag BrainHoney Links
+            flagbxlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='box.com'"));                                             // Flag Box Links
+            flagatlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])"));                                      // Flag Links that do not open in new windows
+            flagemlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([href])"));                                                 // Flag Links that 
+            flagemlinks(ciframe[0].contentWindow.document.querySelectorAll("a:empty"));                                                       // Flag Empty Links
+            flagbhimage(ciframe[0].contentWindow.document.querySelectorAll("img[src*='brainhoney']"));                                        // Flag BrainHoney Images
+            flagalimage(ciframe[0].contentWindow.document.querySelectorAll("img:not([alt])"));                                                // Flag Images without alt text
+            flagallbold(ciframe[0].contentWindow.document.querySelectorAll("[style*='bold']"));                                               // Flags all bold elements
+            flagflepath(document.querySelector("div[class*='d2l-fileviewer-text']"), document.querySelector("ol[class*='vui-breadcrumbs']")); // Checks File path
+            flagpgtitle(document.querySelector("h1[class*='d2l-page-title']"), ciframe[0].contentWindow.document.querySelector("title"));     // Checks the titles*/
+        }
     }
-
     // Flag BrainHoney links
     function flagbhlinks(bhlinks) {
         var i;
