@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     32
+// @version     35
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -42,9 +42,9 @@ window.addEventListener("load", function () {
         var bolds = ciframe[0].contentWindow.document.querySelectorAll("span[style*='bold']");
         var spans = ciframe[0].contentWindow.document.querySelectorAll("span:not([style])");
         var as    = ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])");
-        var empty = ciframe[0].contentWindow.document.querySelectorAll("p:empty, strong:empty, em:empty, a:empty, br");
+        var empty = ciframe[0].contentWindow.document.querySelectorAll("strong:empty, em:empty, a:empty, br");
         var numfixes =  bs.length + is.length + divs.length + bolds.length + spans.length + as.length + empty.length;
-        $( "div[class*='d2l-left d2l-inline']" ).after( '<a type="button" class="d2l-button vui-button" id="fixstuff" ><strong>BETA:</strong> Fix ' + numfixes + ' issues</a>' );
+        $( "div[class*='d2l-left d2l-inline']" ).after( '<a type="button" roll="button" class="d2l-button vui-button" id="fixstuff" style="vertical-align: top;"><strong>BETA:</strong> Fix <span style="color: #ff0000; font-weight: bold;">' + numfixes + '</span> issues</a>' );
         var button = ciframe[0].contentWindow.document.querySelectorAll("a[id*='fixstuff']")[0];
         document.getElementById("fixstuff").addEventListener("click", function(){
             $(bs).contents().unwrap().wrap('<strong/>');
@@ -64,10 +64,10 @@ window.addEventListener("load", function () {
                       + "\nNumber of empty Elements removed: "  + empty.length
                       + "\n\nWritten By Grant Johnson");
 
-                $("a[id*='fixstuff']").text(numfixes + " Issues fixed!");
+                $("a[id*='fixstuff']").html('<strong style="color: #00cc00;">' + numfixes + " Issues fixed!</strong>");
                 
             } else {
-                alert("Nothing fixed");
+                alert("Nothing fixed\n\nWritten By Grant Johnson");
             }
         });
     }
