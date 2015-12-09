@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     35
+// @version     38
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -10,8 +10,9 @@
 // ==/UserScript==
 window.addEventListener("load", function () {
 
-    if (document.querySelector("title").innerHTML == "Login - Brigham Young University - Idaho") {
-        starwarscountdown();
+    if (document.title == "Login - Brigham Young University - Idaho") {
+        //starwarscountdown();
+        JediReflexes();
         //hypnotoad();
     }
 
@@ -20,56 +21,94 @@ window.addEventListener("load", function () {
         dctitle = document.querySelector("h1[class*='d2l-page-title']"); // Get the page title.
         if (dctitle.textContent == "Edit HTML File") {
             fixIssues();
-        } else if ( ciframe[0].getAttribute('class').includes('d2l-iframe') ) {
-            flagbhlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='brainhoney.com']"));                                     // Flag BrainHoney Links
-            flagbxlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='box.com'"));                                             // Flag Box Links
-            flagatlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])"));                                      // Flag Links that do not open in new windows
-            flagemlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([href])"));                                                 // Flag Links that 
-            flagemlinks(ciframe[0].contentWindow.document.querySelectorAll("a:empty"));                                                       // Flag Empty Links
-            flagbhimage(ciframe[0].contentWindow.document.querySelectorAll("img[src*='brainhoney']"));                                        // Flag BrainHoney Images
-            flagalimage(ciframe[0].contentWindow.document.querySelectorAll("img:not([alt])"));                                                // Flag Images without alt text
-            flagallbold(ciframe[0].contentWindow.document.querySelectorAll("[style*='bold']"));                                               // Flags all bold elements
-            flagflepath(document.querySelector("div[class*='d2l-fileviewer-text']"), document.querySelector("ol[class*='vui-breadcrumbs']")); // Checks File path
-            flagpgtitle(document.querySelector("h1[class*='d2l-page-title']"), ciframe[0].contentWindow.document.querySelector("title"));     // Checks the titles*/
+        } else if (ciframe[0].getAttribute('class').includes('d2l-iframe')) {
+            flagCode();
         }
     }
 
-    function fixIssues() {
-        var bs    = ciframe[0].contentWindow.document.querySelectorAll("b");
-        var is    = ciframe[0].contentWindow.document.querySelectorAll("i");
-        var brs   = ciframe[0].contentWindow.document.querySelectorAll("br");
-        var divs  = ciframe[0].contentWindow.document.querySelectorAll("div:not([id])");
-        var bolds = ciframe[0].contentWindow.document.querySelectorAll("span[style*='bold']");
-        var spans = ciframe[0].contentWindow.document.querySelectorAll("span:not([style])");
-        var as    = ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])");
-        var empty = ciframe[0].contentWindow.document.querySelectorAll("strong:empty, em:empty, a:empty, br");
-        var numfixes =  bs.length + is.length + divs.length + bolds.length + spans.length + as.length + empty.length;
-        $( "div[class*='d2l-left d2l-inline']" ).after( '<a type="button" roll="button" class="d2l-button vui-button" id="fixstuff" style="vertical-align: top;"><strong>BETA:</strong> Fix <span style="color: #ff0000; font-weight: bold;">' + numfixes + '</span> issues</a>' );
-        var button = ciframe[0].contentWindow.document.querySelectorAll("a[id*='fixstuff']")[0];
-        document.getElementById("fixstuff").addEventListener("click", function(){
-            $(bs).contents().unwrap().wrap('<strong/>');
-            $(is).contents().unwrap().wrap('<em/>');
-            $(divs).contents().unwrap().wrap('<p/>');
-            $(bolds).contents().unwrap().wrap('<strong/>');
-            $(spans).contents().unwrap();
-            $(as).attr("target","_blank");
-            $(empty).remove();
-            if (numfixes > 0) {
-                alert("Number of <b>s fixed: "                  + bs.length 
-                      + "\nNumber of <i>s fixed: "              + is.length
-                      + "\nNumber of <div>s replaced: "         + divs.length
-                      + "\nNumber of bolded <span>s replaced: " + bolds.length
-                      + "\nNumber of <span>s removed: "         + spans.length 
-                      + "\nNumber of Bad <a>s targets fixed: "  + as.length
-                      + "\nNumber of empty Elements removed: "  + empty.length
-                      + "\n\nWritten By Grant Johnson");
+    function flagCode() {
+        flagbhlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='brainhoney.com']")); // Flag BrainHoney Links
+        flagbenlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='content.byui.edu']"))
+        flagbxlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='box.com'")); // Flag Box Links
+        flagatlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])")); // Flag Links that do not open in new windows
+        flagemlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([href])")); // Flag Links that
+        flagemlinks(ciframe[0].contentWindow.document.querySelectorAll("a:empty")); // Flag Empty Links
+        flagbhimage(ciframe[0].contentWindow.document.querySelectorAll("img[src*='brainhoney']")); // Flag BrainHoney Images
+        flagalimage(ciframe[0].contentWindow.document.querySelectorAll("img:not([alt])")); // Flag Images without alt text
+        flagallbold(ciframe[0].contentWindow.document.querySelectorAll("[style*='bold']")); // Flags all bold elements
+        flagflepath(document.querySelector("div[class*='d2l-fileviewer-text']"), document.querySelector("ol[class*='vui-breadcrumbs']")); // Checks File path
+        flagpgtitle(document.querySelector("h1[class*='d2l-page-title']"), ciframe[0].contentWindow.document.querySelector("title")); // Checks the titles*/
+    }
 
-                $("a[id*='fixstuff']").html('<strong style="color: #00cc00;">' + numfixes + " Issues fixed!</strong>");
-                
-            } else {
-                alert("Nothing fixed\n\nWritten By Grant Johnson");
-            }
-        });
+    var bs,
+        is,
+        brs,
+        divs,
+        bolds,
+        spans,
+        as,
+        empty,
+        altimg,
+        body;
+
+    function fixIssues() {
+        updateVars();
+        if (numPosFixes() > 0) {
+            $("div[class*='d2l-left d2l-inline']").after('<a type="button" roll="button" class="d2l-button vui-button" id="fixstuff" style="vertical-align: top;"><strong>BETA:</strong> Fix <span style="color: #ff0000; font-weight: bold;">' + numPosFixes() + '</span> issues</a>');
+            document.getElementById("fixstuff").addEventListener("click", function () {
+                updateVars();
+                cleanCode();
+                reportBack();
+            });
+        } else {
+            $("div[class*='d2l-left d2l-inline']").after('<a type="button" roll="button" class="d2l-button vui-button" style="vertical-align: top;"><strong>BETA: </strong><span style="color: #00cc00; font-weight: bold;">No Fixable Issues Found.</span></a>');
+        }
+
+    }
+
+    function cleanCode() {
+        $(body).find("b").contents().unwrap().wrap('<strong/>');
+        $(body).find("i").contents().unwrap().wrap('<em/>');
+        $(body).filter("div:empty[id!='main'][id!='header'][id!='article']").contents().unwrap();
+        $(body).filter("div[id!='main'][id!='header'][id!='article']").contents().unwrap().wrap('<p/>');
+        $(body).find("span[style*='bold']").contents().unwrap().wrap('<strong/>');
+        $(body).find("span:not([style*='font-size'])").contents().unwrap();
+        $(body).find("a:not([target='_blank'])").attr("target", "_blank");
+        $(body).find("img:not([alt])").attr("alt", "");
+        $(body).find("strong:empty, em:empty, a:empty, br").remove();
+        $(body).filter("p:empty").contents().unwrap();
+    }
+
+    function reportBack() {
+        alert("Number of <b>s fixed: " + bs.length
+              + "\nNumber of <i>s fixed: " + is.length
+              //+ "\nNumber of <div>s replaced: " + divs.length
+              + "\nNumber of bolded <span>s replaced: " + bolds.length
+              + "\nNumber of <span>s removed: " + spans.length
+              + "\nNumber of Bad <a>s targets fixed: " + as.length
+              + "\nNumber of empty Elements removed: " + empty.length
+              + "\nNumber of alt attributes added to images: " + altimg.length
+              + "\n\nWritten By Grant Johnson");
+
+        $("a[id*='fixstuff']").html('<strong style="color: #00cc00;">' + numPosFixes() + " Issues fixed!</strong>");
+    }
+
+    function numPosFixes() {
+        return bs.length + is.length + bolds.length + spans.length + as.length + empty.length + altimg.length;
+    }
+
+    function updateVars() {
+        bs = ciframe[0].contentWindow.document.querySelectorAll("b");
+        is = ciframe[0].contentWindow.document.querySelectorAll("i");
+        brs = ciframe[0].contentWindow.document.querySelectorAll("br");
+        body = ciframe[0].contentWindow.document.querySelectorAll("*");
+        //divs = ciframe[0].contentWindow.document.querySelectorAll("div[id!='randomCrap']");
+        //divs = $
+        bolds = ciframe[0].contentWindow.document.querySelectorAll("span[style*='bold']");
+        spans = ciframe[0].contentWindow.document.querySelectorAll("span:not([style])");
+        as = ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])");
+        empty = ciframe[0].contentWindow.document.querySelectorAll("strong:empty, em:empty, a:empty, br");
+        altimg = ciframe[0].contentWindow.document.querySelectorAll("img:not([alt])");
     }
 
     // Flag BrainHoney links
@@ -80,6 +119,17 @@ window.addEventListener("load", function () {
             bhlinks[i].style.outline = "3px solid #d9432f";
             bhlinks[i].style.background = "repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)";
             seterrortitle(bhlinks[i], 'This is an iLearn 2.0 link, ');
+
+        }
+    }
+
+    function flagbenlinks(benlinks) {
+        var i;
+        for (i = 0; i < benlinks.length; i++) {
+            benlinks[i].style.color = "#d9432f";
+            benlinks[i].style.outline = "3px solid #d9432f";
+            benlinks[i].style.background = "repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)";
+            seterrortitle(benlinks[i], 'This is a Benjamin link, ');
 
         }
     }
@@ -182,8 +232,12 @@ window.addEventListener("load", function () {
         var title = document.querySelector("title");
         if (title.innerHTML == "Login - Brigham Young University - Idaho") {
             var target_date = new Date("Dec 17 2015 20:00:00 GMT-0600").getTime();
-            var days, hours, minutes, seconds;
+            var days,
+                hours,
+                minutes,
+                seconds;
             var countdown = document.querySelector("h1[class*='d2l-login-portal-heading']");
+
             setInterval(function () {
                 var current_date = new Date().getTime();
                 var seconds_left = (target_date - current_date) / 1000;
@@ -193,14 +247,19 @@ window.addEventListener("load", function () {
                 seconds_left = seconds_left % 3600;
                 minutes = parseInt(seconds_left / 60);
                 seconds = parseInt(seconds_left % 60);
-                countdown.innerHTML = "THE FORCE AWAKENS IN<br />" + days + "d " + hours + "h " + minutes + "m " + seconds + "s";
+                countdown.innerHTML = "THE FORCE AWAKENS IN<br />" + days + "D " + hours + "H " + minutes + "M " + seconds + "S";
                 countdown.style.fontWeight = "bold";
                 countdown.style.color = "#FFE81F";
                 countdown.style.textAlign = "center";
-                countdown.style.fontSize = "75px";
+                countdown.style.fontSize = "36px";
                 countdown.style.textShadow = "0 0 5px #000000";
             }, 1000);
         }
+    }
+
+    function JediReflexes() {
+        var countdown = document.querySelector("h1[class*='d2l-login-portal-heading']");
+        $(countdown).html('<h1 style="font-size: 42px; text-align: center; color: #ff0000">BRIGHTSPACE BE LIKE</h1><br><video class="share-video" id="share-video" poster="https://thumbs.gfycat.com/SinfulPastelGoldenmantledgroundsquirrel-poster.jpg" autoplay="" muted="" loop=""><source id="webmSource" src="https://zippy.gfycat.com/SinfulPastelGoldenmantledgroundsquirrel.webm" type="video/webm"><source id="mp4Source" src="https://zippy.gfycat.com/SinfulPastelGoldenmantledgroundsquirrel.mp4" type="video/mp4"></video>');
     }
 
     function hypnotoad() {
