@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     39
+// @version     40
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -11,8 +11,8 @@
 window.addEventListener("load", function () {
 
     if (document.title == "Login - Brigham Young University - Idaho") {
-        //starwarscountdown();
-        JediReflexes();
+        starwarscountdown();
+        //JediReflexes();
         //hypnotoad();
     }
 
@@ -26,30 +26,7 @@ window.addEventListener("load", function () {
         }
     }
 
-    function flagCode() {
-        flagbhlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='brainhoney.com']")); // Flag BrainHoney Links
-        flagbenlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='courses.byui.edu']"))
-        flagbxlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='box.com'")); // Flag Box Links
-        flagatlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])")); // Flag Links that do not open in new windows
-        flagemlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([href])")); // Flag Links that
-        flagemlinks(ciframe[0].contentWindow.document.querySelectorAll("a:empty")); // Flag Empty Links
-        flagbhimage(ciframe[0].contentWindow.document.querySelectorAll("img[src*='brainhoney']")); // Flag BrainHoney Images
-        flagalimage(ciframe[0].contentWindow.document.querySelectorAll("img:not([alt])")); // Flag Images without alt text
-        flagallbold(ciframe[0].contentWindow.document.querySelectorAll("[style*='bold']")); // Flags all bold elements
-        flagflepath(document.querySelector("div[class*='d2l-fileviewer-text']"), document.querySelector("ol[class*='vui-breadcrumbs']")); // Checks File path
-        flagpgtitle(document.querySelector("h1[class*='d2l-page-title']"), ciframe[0].contentWindow.document.querySelector("title")); // Checks the titles*/
-    }
-
-    var bs,
-        is,
-        brs,
-        divs,
-        bolds,
-        spans,
-        as,
-        empty,
-        altimg,
-        body;
+    var bs, is, brs, divs, bolds, spans, as, empty, altimg, body;
 
     function fixIssues() {
         updateVars();
@@ -107,62 +84,48 @@ window.addEventListener("load", function () {
         altimg = ciframe[0].contentWindow.document.querySelectorAll("img:not([alt])");
     }
 
-    function flagbhlinks(bhlinks) {
-        $(bhlinks).css({"color":"#d9432f", "outline":"3px solid #d9432f", "background":"repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"});
-        seterrortitles(bhlinks, 'This is an iLearn 2.0 link, ');
-    }
+    function flagCode() {
+        body = ciframe[0].contentWindow.document.querySelectorAll("*");
 
-    function flagbenlinks(benlinks) {
-        $(benlinks).css({"color":"#d9432f", "outline":"3px solid #d9432f", "background":"repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"});
-        seterrortitles(benlinks, 'This is a Benjamin link, ');
-    }
+        // Flag the 
+        $(body).filter("a[href*='brainhoney.com']").css({"color":"#d9432f", "outline":"3px solid #d9432f", "background":"repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"});
+        $(body).filter("a[href*='box.com']").css({"color":"#d9432f", "outline":"3px solid #d9432f", "background":"repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"});
+        $(body).filter("a[href*='courses.byui.edu']").css({"color":"#d9432f", "outline":"3px solid #d9432f", "background":"repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"});
+        $(body).filter("[style*='bold']").css({"outline":"3px solid #689F38", "background":"repeating-linear-gradient(45deg, #DCEDC8, #DCEDC8 5px, #ffffff 5px, #ffffff 10px)"});
+        $(body).filter("a:not([target='_blank'])").css({"border":"3px solid #ffb700", "background":"repeating-linear-gradient(135deg, #FFE0B2, #FFE0B2 5px, #ffffff 5px, #ffffff 10px)"});
+        $(body).filter("a:empty").css({"border":"3px solid #0057e7"});
+        $(body).filter("img[src*='brainhoney']").css({"border":"5px solid #d9432f"});
+        $(body).filter("img:not([alt])").css({"outline":"5px solid #176ced"});
 
-    function flagbxlinks(bxlinks) {
-        $(bxlinks).css({"color":"#d9432f", "outline":"3px solid #d9432f", "background":"repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"});
-        seterrortitles(bxlinks, 'This a Box link, ');
-    }
+        // Set titles
+        seterrortitles($(body).filter("a[href*='brainhoney.com']"), 'This is an iLearn 2.0 link, ');
+        seterrortitles($(body).filter("a[href*='box.com']"), 'This a Box link, ');
+        seterrortitles($(body).filter("a[href*='courses.byui.edu']"), 'This is a Benjamin link, ');
+        seterrortitles($(body).filter("[style*='bold']"), 'Embeded font-weight, ');
+        seterrortitles($(body).filter("a:not([target='_blank'])"), 'This link does not open in a new window, ');
+        seterrortitles($(body).filter("a:empty"), 'This link has an empty href or text, ');
+        seterrortitles($(body).filter("img[src*='brainhoney']"), 'This image is from BrainHoney, ');
+        seterrortitles($(body).filter("img:not([alt])"), 'This Image has no alt text, ');
 
-    function flagallbold(allbold) {
-        $(allbold).css({"outline":"3px solid #689F38", "background":"repeating-linear-gradient(45deg, #DCEDC8, #DCEDC8 5px, #ffffff 5px, #ffffff 10px)"});
-        seterrortitles(allbold, 'Embeded font-weight, ');
-    }
-
-    function flagatlinks(atlinks) {
-        $(atlinks).css({"border":"3px solid #ffb700", "background":"repeating-linear-gradient(135deg, #FFE0B2, #FFE0B2 5px, #ffffff 5px, #ffffff 10px)"});
-        seterrortitles(atlinks, 'This link does not open in a new window, ');
-    }
-
-    function flagemlinks(emlinks) {
-        $(emlinks).css({"border":"3px solid #0057e7"});
-        seterrortitles(emlinks, 'This link has an empty href or text, ');
-    }
-
-    function flagbhimage(bhimage) {
-        $(bhimage).css({"border":"5px solid #d9432f"});
-        seterrortitles(bhimage, 'This image is from BrainHoney, ');
-    }
-
-    function flagalimage(alimage) {
-        $(alimage).css({"outline":"5px solid #176ced"});
-        seterrortitles(alimage, 'This Image has no alt text, ');
+        // Flag filepath and page title
+        flagflepath(document.querySelector("div[class*='d2l-fileviewer-text']"), document.querySelector("ol[class*='vui-breadcrumbs']")); // Checks File path
+        flagpgtitle(document.querySelector("h1[class*='d2l-page-title']"), ciframe[0].contentWindow.document.querySelector("title")); // Checks the titles*/
     }
 
     function flagflepath(flepath, pathdiv) {
-        var fpath = flepath.getAttribute('data-location');
-        if (!fpath.includes('%20Files')) {
-            pathdiv.style.border = "3px solid #d9432f";
-            pathdiv.style.background = "repeating-linear-gradient(45deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)";
+        if (!flepath.getAttribute('data-location').includes('%20Files')) {
+            $(pathdiv).css({"border":"3px solid #d9432f", "background":"repeating-linear-gradient(45deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"});
             seterrortitle(pathdiv, 'The filepath doesn\'t have the words \'Course Files\' or \'Content Files\'.');
         }
     }
 
     function flagpgtitle(dctitle, httitle) {
-        var pagetitle = dctitle.textContent;
-        var htmltitle = httitle.textContent;
-        if (pagetitle != htmltitle) {
-            dctitle.style.border = "3px solid #176ced";
-            dctitle.style.background = "repeating-linear-gradient(135deg, #BBDEFB, #BBDEFB 5px, #ffffff 5px, #ffffff 10px)";
-            seterrortitle(dctitle, "The HTML title \"" + htmltitle + "\" does not match the document title \"" + pagetitle + "\"");
+        if ($(body).filter("title").length == 0){
+            $(dctitle).css({"border":"3px solid #176ced", "background":"repeating-linear-gradient(135deg, #BBDEFB, #BBDEFB 5px, #ffffff 5px, #ffffff 10px)"});
+            seterrortitle(dctitle, "No Title Found");
+        } else if (dctitle.textContent != httitle.textContent) {
+            $(dctitle).css({"border":"3px solid #176ced", "background":"repeating-linear-gradient(135deg, #BBDEFB, #BBDEFB 5px, #ffffff 5px, #ffffff 10px)"});
+            seterrortitle(dctitle, "The HTML title \"" + httitle.textContent + "\" does not match the document title \"" + pagetitle + "\"");
         }
     }
 
@@ -199,28 +162,35 @@ window.addEventListener("load", function () {
     }
 
     function starwarscountdown() {
-        var title = document.querySelector("title");
-        if (title.innerHTML == "Login - Brigham Young University - Idaho") {
-            var target_date = new Date("Dec 17 2015 20:00:00 GMT-0600").getTime();
-            var days,
-                hours,
-                minutes,
-                seconds;
-            var countdown = document.querySelector("h1[class*='d2l-login-portal-heading']");
+        var target_date = new Date("Dec 17 2015 20:00:00 GMT-0600").getTime();
+        var days,
+            hours,
+            minutes,
+            seconds;
+        var countdown = document.querySelector("h1[class*='d2l-login-portal-heading']");
+        var current_date = new Date().getTime();
+        var seconds_left = (target_date - current_date) / 1000;
+        days = parseInt(seconds_left / 86400);
+        seconds_left = seconds_left % 86400;
+        hours = parseInt(seconds_left / 3600);
+        seconds_left = seconds_left % 3600;
+        minutes = parseInt(seconds_left / 60);
+        seconds = parseInt(seconds_left % 60);
+        $(countdown).html("THE FORCE AWAKENS IN<br />" + days + "D " + hours + "H " + minutes + "M " + seconds + "S");
+        $(countdown).css({"font-weight":"bold", "color":"#FFE81F", "font-size":"72px", "text-align":"center", "text-shadow":"0 0 5px #000000"});
 
-            setInterval(function () {
-                var current_date = new Date().getTime();
-                var seconds_left = (target_date - current_date) / 1000;
-                days = parseInt(seconds_left / 86400);
-                seconds_left = seconds_left % 86400;
-                hours = parseInt(seconds_left / 3600);
-                seconds_left = seconds_left % 3600;
-                minutes = parseInt(seconds_left / 60);
-                seconds = parseInt(seconds_left % 60);
-                $(countdown).text("THE FORCE AWAKENS IN<br />" + days + "D " + hours + "H " + minutes + "M " + seconds + "S");
-                $(countdown).css({"font-weight":"bold", "color":"#FFE81F", "font-size":"36px", "text-align":"center", "text-shadow":"0 0 5px #000000"});
-            }, 1000);
-        }
+        setInterval(function () {
+            var current_date = new Date().getTime();
+            var seconds_left = (target_date - current_date) / 1000;
+            days = parseInt(seconds_left / 86400);
+            seconds_left = seconds_left % 86400;
+            hours = parseInt(seconds_left / 3600);
+            seconds_left = seconds_left % 3600;
+            minutes = parseInt(seconds_left / 60);
+            seconds = parseInt(seconds_left % 60);
+            $(countdown).html("THE FORCE AWAKENS IN<br />" + days + "D " + hours + "H " + minutes + "M " + seconds + "S");
+            $(countdown).css({"font-weight":"bold", "color":"#FFE81F", "font-size":"72px", "text-align":"center", "text-shadow":"0 0 5px #000000"});
+        }, 1000);
     }
 
     function JediReflexes() {
