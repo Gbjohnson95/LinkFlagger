@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     38
+// @version     39
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -28,7 +28,7 @@ window.addEventListener("load", function () {
 
     function flagCode() {
         flagbhlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='brainhoney.com']")); // Flag BrainHoney Links
-        flagbenlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='content.byui.edu']"))
+        flagbenlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='courses.byui.edu']"))
         flagbxlinks(ciframe[0].contentWindow.document.querySelectorAll("a[href*='box.com'")); // Flag Box Links
         flagatlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])")); // Flag Links that do not open in new windows
         flagemlinks(ciframe[0].contentWindow.document.querySelectorAll("a:not([href])")); // Flag Links that
@@ -61,28 +61,26 @@ window.addEventListener("load", function () {
                 reportBack();
             });
         } else {
-            $("div[class*='d2l-left d2l-inline']").after('<a type="button" roll="button" class="d2l-button vui-button" style="vertical-align: top;"><strong>BETA: </strong><span style="color: #00cc00; font-weight: bold;">No Fixable Issues Found.</span></a>');
+            $("div[class*='d2l-left d2l-inline']").after('<a type="button" roll="button" class="d2l-button vui-button" id="fixstuff" style="vertical-align: top;">Fix <span style="color: #ff0000; font-weight: bold;">' + numPosFixes() + '</span> issues <em>Can interfere with formating</em></a>');
         }
 
     }
 
     function cleanCode() {
-        $(body).find("b").contents().unwrap().wrap('<strong/>');
-        $(body).find("i").contents().unwrap().wrap('<em/>');
         $(body).filter("div:empty[id!='main'][id!='header'][id!='article']").contents().unwrap();
         $(body).filter("div[id!='main'][id!='header'][id!='article']").contents().unwrap().wrap('<p/>');
-        $(body).find("span[style*='bold']").contents().unwrap().wrap('<strong/>');
-        $(body).find("span:not([style*='font-size'])").contents().unwrap();
-        $(body).find("a:not([target='_blank'])").attr("target", "_blank");
         $(body).find("img:not([alt])").attr("alt", "");
-        $(body).find("strong:empty, em:empty, a:empty, br").remove();
-        $(body).filter("p:empty").contents().unwrap();
+        $(bs).contents().unwrap().wrap('<strong/>').length;
+        $(is).contents().unwrap().wrap('<em/>').length;
+        $(bolds).contents().unwrap().wrap('<strong/>');
+        $(spans).contents().unwrap();
+        $(as).attr("target","_blank");
+        $(empty).remove();
     }
 
     function reportBack() {
         alert("Number of <b>s fixed: " + bs.length
               + "\nNumber of <i>s fixed: " + is.length
-              //+ "\nNumber of <div>s replaced: " + divs.length
               + "\nNumber of bolded <span>s replaced: " + bolds.length
               + "\nNumber of <span>s removed: " + spans.length
               + "\nNumber of Bad <a>s targets fixed: " + as.length
@@ -102,8 +100,6 @@ window.addEventListener("load", function () {
         is = ciframe[0].contentWindow.document.querySelectorAll("i");
         brs = ciframe[0].contentWindow.document.querySelectorAll("br");
         body = ciframe[0].contentWindow.document.querySelectorAll("*");
-        //divs = ciframe[0].contentWindow.document.querySelectorAll("div[id!='randomCrap']");
-        //divs = $
         bolds = ciframe[0].contentWindow.document.querySelectorAll("span[style*='bold']");
         spans = ciframe[0].contentWindow.document.querySelectorAll("span:not([style])");
         as = ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])");
@@ -111,77 +107,46 @@ window.addEventListener("load", function () {
         altimg = ciframe[0].contentWindow.document.querySelectorAll("img:not([alt])");
     }
 
-    // Flag BrainHoney links
     function flagbhlinks(bhlinks) {
-        var i;
-        for (i = 0; i < bhlinks.length; i++) {
-            bhlinks[i].style.color = "#d9432f";
-            bhlinks[i].style.outline = "3px solid #d9432f";
-            bhlinks[i].style.background = "repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)";
-            seterrortitle(bhlinks[i], 'This is an iLearn 2.0 link, ');
-
-        }
+        $(bhlinks).css({"color":"#d9432f", "outline":"3px solid #d9432f", "background":"repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"});
+        seterrortitles(bhlinks, 'This is an iLearn 2.0 link, ');
     }
 
     function flagbenlinks(benlinks) {
-        var i;
-        for (i = 0; i < benlinks.length; i++) {
-            benlinks[i].style.color = "#d9432f";
-            benlinks[i].style.outline = "3px solid #d9432f";
-            benlinks[i].style.background = "repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)";
-            seterrortitle(benlinks[i], 'This is a Benjamin link, ');
-
-        }
+        $(benlinks).css({"color":"#d9432f", "outline":"3px solid #d9432f", "background":"repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"});
+        seterrortitles(benlinks, 'This is a Benjamin link, ');
     }
 
-    // Flag Box links
     function flagbxlinks(bxlinks) {
-        var i;
-        for (i = 0; i < bxlinks.length; i++) {
-            bxlinks[i].style.color = "#d9432f";
-            bxlinks[i].style.outline = "3px solid #d9432f";
-            seterrortitle(bxlinks[i], 'This a Box link, ');
-        }
+        $(bxlinks).css({"color":"#d9432f", "outline":"3px solid #d9432f", "background":"repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"});
+        seterrortitles(bxlinks, 'This a Box link, ');
     }
 
-    // Flag links that don't open in new windows
+    function flagallbold(allbold) {
+        $(allbold).css({"outline":"3px solid #689F38", "background":"repeating-linear-gradient(45deg, #DCEDC8, #DCEDC8 5px, #ffffff 5px, #ffffff 10px)"});
+        seterrortitles(allbold, 'Embeded font-weight, ');
+    }
+
     function flagatlinks(atlinks) {
-        var i;
-        for (i = 0; i < atlinks.length; i++) {
-            atlinks[i].style.border = "3px solid #ffb700";
-            atlinks[i].style.background = "repeating-linear-gradient(135deg, #FFE0B2, #FFE0B2 5px, #ffffff 5px, #ffffff 10px)";
-            seterrortitle(atlinks[i], 'This link does not open in a new window, ');
-        }
+        $(atlinks).css({"border":"3px solid #ffb700", "background":"repeating-linear-gradient(135deg, #FFE0B2, #FFE0B2 5px, #ffffff 5px, #ffffff 10px)"});
+        seterrortitles(atlinks, 'This link does not open in a new window, ');
     }
 
-    // Flag Links with empty attributes
     function flagemlinks(emlinks) {
-        var i;
-        for (i = 0; i < emlinks.length; i++) {
-            emlinks[i].style.border = "3px solid #0057e7";
-            seterrortitle(emlinks[i], 'This link has an empty href or text, ');
-        }
+        $(emlinks).css({"border":"3px solid #0057e7"});
+        seterrortitles(emlinks, 'This link has an empty href or text, ');
     }
 
-    // Flag BrainHoney images
     function flagbhimage(bhimage) {
-        var i;
-        for (i = 0; i < bhimage.length; i++) {
-            bhimage[i].style.border = "5px solid #d9432f";
-            seterrortitle(bhimage[i], 'This image is from BrainHoney, ');
-        }
+        $(bhimage).css({"border":"5px solid #d9432f"});
+        seterrortitles(bhimage, 'This image is from BrainHoney, ');
     }
 
-    // Flag images without any alt attribute
     function flagalimage(alimage) {
-        var i;
-        for (i = 0; i < alimage.length; i++) {
-            alimage[i].style.outline = "5px solid #176ced";
-            seterrortitle(alimage[i], 'This Image has no alt text, ');
-        }
+        $(alimage).css({"outline":"5px solid #176ced"});
+        seterrortitles(alimage, 'This Image has no alt text, ');
     }
 
-    // Check the filepath
     function flagflepath(flepath, pathdiv) {
         var fpath = flepath.getAttribute('data-location');
         if (!fpath.includes('%20Files')) {
@@ -191,7 +156,6 @@ window.addEventListener("load", function () {
         }
     }
 
-    // Check the titles
     function flagpgtitle(dctitle, httitle) {
         var pagetitle = dctitle.textContent;
         var htmltitle = httitle.textContent;
@@ -202,17 +166,6 @@ window.addEventListener("load", function () {
         }
     }
 
-    // Flag all bolds
-    function flagallbold(allbold) {
-        var i;
-        for (i = 0; i < allbold.length; i++) {
-            allbold[i].style.outline = "3px solid #689F38";
-            allbold[i].style.background = "repeating-linear-gradient(45deg, #DCEDC8, #DCEDC8 5px, #ffffff 5px, #ffffff 10px)";
-            seterrortitle(allbold[i], 'Embeded font-weight, ');
-        }
-    }
-
-    // Change titles
     function seterrortitle(element, titletext) {
         var newtitle = '';
         var curtitle = '';
@@ -225,6 +178,23 @@ window.addEventListener("load", function () {
                 newtitle = 'Issues: ' + titletext;
             }
             element.setAttribute('title', newtitle);
+        }
+    }
+
+    function seterrortitles(elements, titletext){
+        var newtitle = '';
+        var curtitle = '';
+        for (i = 0; i < elements.length; i++) {
+            if (elements[i] !== undefined) {
+                if (elements[i].title.indexOf('Issues') === 0) {
+                    curtitle = '';
+                    curtitle = elements[i].getAttribute('title');
+                    newtitle = curtitle + titletext;
+                } else {
+                    newtitle = 'Issues: ' + titletext;
+                }
+                elements[i].setAttribute('title', newtitle);
+            }
         }
     }
 
@@ -247,28 +217,18 @@ window.addEventListener("load", function () {
                 seconds_left = seconds_left % 3600;
                 minutes = parseInt(seconds_left / 60);
                 seconds = parseInt(seconds_left % 60);
-                countdown.innerHTML = "THE FORCE AWAKENS IN<br />" + days + "D " + hours + "H " + minutes + "M " + seconds + "S";
-                countdown.style.fontWeight = "bold";
-                countdown.style.color = "#FFE81F";
-                countdown.style.textAlign = "center";
-                countdown.style.fontSize = "36px";
-                countdown.style.textShadow = "0 0 5px #000000";
+                $(countdown).text("THE FORCE AWAKENS IN<br />" + days + "D " + hours + "H " + minutes + "M " + seconds + "S");
+                $(countdown).css({"font-weight":"bold", "color":"#FFE81F", "font-size":"36px", "text-align":"center", "text-shadow":"0 0 5px #000000"});
             }, 1000);
         }
     }
 
     function JediReflexes() {
-        var countdown = document.querySelector("h1[class*='d2l-login-portal-heading']");
-        $(countdown).html('<h1 style="font-size: 42px; text-align: center; color: #ff0000">BRIGHTSPACE BE LIKE</h1><br><video class="share-video" id="share-video" poster="https://thumbs.gfycat.com/SinfulPastelGoldenmantledgroundsquirrel-poster.jpg" autoplay="" muted="" loop=""><source id="webmSource" src="https://zippy.gfycat.com/SinfulPastelGoldenmantledgroundsquirrel.webm" type="video/webm"><source id="mp4Source" src="https://zippy.gfycat.com/SinfulPastelGoldenmantledgroundsquirrel.mp4" type="video/mp4"></video>');
+        $("h1[class*='d2l-login-portal-heading']").html('<h1 style="font-size: 42px; text-align: center; color: #ff0000">BRIGHTSPACE BE LIKE</h1><br><video class="share-video" id="share-video" poster="https://thumbs.gfycat.com/SinfulPastelGoldenmantledgroundsquirrel-poster.jpg" autoplay="" muted="" loop=""><source id="webmSource" src="https://zippy.gfycat.com/SinfulPastelGoldenmantledgroundsquirrel.webm" type="video/webm"><source id="mp4Source" src="https://zippy.gfycat.com/SinfulPastelGoldenmantledgroundsquirrel.mp4" type="video/mp4"></video>');
     }
 
     function hypnotoad() {
-        var countdown = document.querySelector("h1[class*='d2l-login-portal-heading']");
-        countdown.innerHTML = 'ALL GLORY TO THE BRIGHTSPACE<br /><iframe width="830" height="479" src="https://www.youtube.com/embed/t9eIL3bauuw?autoplay=1;autohide=1&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>';
-        countdown.style.fontWeight = "bold";
-        countdown.style.color = "#000000";
-        countdown.style.textAlign = "center";
-        countdown.style.fontSize = "75px";
-
+        $("h1[class*='d2l-login-portal-heading']").html('ALL GLORY TO THE BRIGHTSPACE<br /><iframe width="830" height="479" src="https://www.youtube.com/embed/t9eIL3bauuw?autoplay=1;autohide=1&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>');
+        $("h1[class*='d2l-login-portal-heading']").css({"font-weight":"bold", "color":"#000000", "font-size":"75px", "text-align":"center"});
     }
 });
