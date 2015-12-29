@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     45
+// @version     46
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -24,7 +24,7 @@ window.addEventListener("load", function () {
         }
     }
 
-    var bs, is, brs, divs, bolds, spans, as, empty, altimg, body, emdivs, baddiv;
+    var bs, is, brs, divs, bolds, spans, as, empty, altimg, body, emdivs, baddiv, youtube, equila;
 
     function fixIssues() {
         $("div[class*='d2l-left d2l-inline']").after('<a type="button" roll="button" class="d2l-button vui-button" id="fixstuff" style="vertical-align: top;"><strong>BETA:</strong> Fix issues. <em>Can interfere with formating</em></a>');
@@ -33,7 +33,7 @@ window.addEventListener("load", function () {
             updateVars();
             cleanCode();
             openhtmleditor();
-            reportBack();
+            $("a[id*='fixstuff']").html('<strong style="color: #00cc00;">Issues fixed!</strong>');
         });
     }
 
@@ -48,6 +48,10 @@ window.addEventListener("load", function () {
         $(spans).contents().unwrap();
         $(as).attr("target", "_blank");
         $(empty).remove();
+        $(youtube).attr("height", "500px");
+        $(youtube).attr("width", "100%");
+        $(equila).attr("height", "500px");
+        $(equila).attr("width", "100%");
     }
 
     function reportBack() {
@@ -61,7 +65,7 @@ window.addEventListener("load", function () {
               "\nNumber of <div>s replaced: " + $(baddiv).length +
               "\n\nWritten By Grant Johnson");
 
-        $("a[id*='fixstuff']").html('<strong style="color: #00cc00;">Issues fixed!</strong>');
+        
     }
 
     function openhtmleditor() {
@@ -84,7 +88,7 @@ window.addEventListener("load", function () {
 
                     // Make Changes
                     sourcecode = sourcecode.replace(/<title>(.*?)</g, "<title>" + pagetitle + "<"); // Sync page title
-                    //sourcecode = sourcecode.replace(/&nbsp;/g, " ");
+                    
                     sourcecode = sourcecode.replace(/&amp;/g  , "&");
                     sourcecode = sourcecode.replace(/&ldquo;/g, "\"");
                     sourcecode = sourcecode.replace(/&rdquo;/g, "\"");
@@ -92,8 +96,18 @@ window.addEventListener("load", function () {
                     sourcecode = sourcecode.replace(/&rsquo;/g, "\'");
                     sourcecode = sourcecode.replace(/&ndash;/g, " - ");
                     sourcecode = sourcecode.replace(/&mdash;/g, "-");
+                    
                     sourcecode = sourcecode.replace(/<p><\/p>/g, ""); // get rid of empty paragraphs
-                    sourcecode = sourcecode.replace(/\/d2l\/le\/calendar\/\d{5}/g, "/d2l/le/calendar/{Orgunitid}"); // update calender links
+                    sourcecode = sourcecode.replace(/<h1><\/h1>/g, ""); // get rid of empty headers
+                    sourcecode = sourcecode.replace(/<h2><\/h2>/g, ""); // get rid of empty headers
+                    sourcecode = sourcecode.replace(/<h3><\/h3>/g, ""); // get rid of empty headers
+                    sourcecode = sourcecode.replace(/<h4><\/h4>/g, ""); // get rid of empty headers
+                    sourcecode = sourcecode.replace(/<h5><\/h5>/g, ""); // get rid of empty headers
+                    sourcecode = sourcecode.replace(/<h6><\/h6>/g, ""); // get rid of empty headers
+                    
+                    sourcecode = sourcecode.replace(/\/d2l\/le\/calendar\/\d{5}/g, "/d2l/le/calendar/{Orgunitid}"); // Update calender links
+                    
+                    sourcecode = sourcecode.replace(/due Saturday/g, 'due <s><strong style="color: #FF0000">SATURDAY</strong></s>'); // Forces compliance
 
                     // Return to origional syntax
                     sourcecode = sourcecode.replace(/>/g , '&gt;');
@@ -110,17 +124,19 @@ window.addEventListener("load", function () {
     }
 
     function updateVars() {
-        bs     = ciframe[0].contentWindow.document.querySelectorAll("b");
-        is     = ciframe[0].contentWindow.document.querySelectorAll("i");
-        brs    = ciframe[0].contentWindow.document.querySelectorAll("br");
-        body   = ciframe[0].contentWindow.document.querySelectorAll("*");
-        bolds  = ciframe[0].contentWindow.document.querySelectorAll("span[style*='bold']");
-        spans  = ciframe[0].contentWindow.document.querySelectorAll("span:not([style])");
-        as     = ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])");
-        empty  = ciframe[0].contentWindow.document.querySelectorAll("strong:empty, em:empty, br, b:empty");
-        altimg = ciframe[0].contentWindow.document.querySelectorAll("img:not([alt])");
-        emdivs = $(body).filter("div:empty[id!='main'][id!='header'][id!='article']");
-        baddiv = $(body).filter("div[id!='main'][id!='header'][id!='article']");
+        bs      = ciframe[0].contentWindow.document.querySelectorAll("b");
+        is      = ciframe[0].contentWindow.document.querySelectorAll("i");
+        brs     = ciframe[0].contentWindow.document.querySelectorAll("br");
+        body    = ciframe[0].contentWindow.document.querySelectorAll("*");
+        bolds   = ciframe[0].contentWindow.document.querySelectorAll("span[style*='bold']");
+        spans   = ciframe[0].contentWindow.document.querySelectorAll("span:not([style])");
+        as      = ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])");
+        empty   = ciframe[0].contentWindow.document.querySelectorAll("strong:empty, em:empty, br, b:empty");
+        altimg  = ciframe[0].contentWindow.document.querySelectorAll("img:not([alt])");
+        emdivs  = $(body).filter("div:empty[id!='main'][id!='header'][id!='article']");
+        baddiv  = $(body).filter("div[id!='main'][id!='header'][id!='article']");
+        youtube = ciframe[0].contentWindow.document.querySelectorAll("iframe[src*='youtube.com/embed/']");
+        equila  = ciframe[0].contentWindow.document.querySelectorAll("iframe[src*='content.byui.edu/file/']");
     }
 
     function flagCode() {
