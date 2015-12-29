@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     42
+// @version     45
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -27,18 +27,14 @@ window.addEventListener("load", function () {
     var bs, is, brs, divs, bolds, spans, as, empty, altimg, body, emdivs, baddiv;
 
     function fixIssues() {
-        updateVars();
-        if (numPosFixes() > 0) {
-            $("div[class*='d2l-left d2l-inline']").after('<a type="button" roll="button" class="d2l-button vui-button" id="fixstuff" style="vertical-align: top;"><strong>BETA:</strong> Fix <span style="color: #ff0000; font-weight: bold;">' + numPosFixes() + '</span> issues. <em>Can interfere with formating</em></a>');
-            document.getElementById("fixstuff").addEventListener("click", function () {
-                updateVars();
-                cleanCode();
-                //reportBack();
-                openhtmleditor();
-            });
-        } else {
-            $("div[class*='d2l-left d2l-inline']").after('<a type="button" roll="button" class="d2l-button vui-button" style="vertical-align: top;"><span style="color: #00bb00; font-weight: bold;">No Fixes Found</span></a>');
-        }
+        $("div[class*='d2l-left d2l-inline']").after('<a type="button" roll="button" class="d2l-button vui-button" id="fixstuff" style="vertical-align: top;"><strong>BETA:</strong> Fix issues. <em>Can interfere with formating</em></a>');
+        
+        document.getElementById("fixstuff").addEventListener("click", function () {
+            updateVars();
+            cleanCode();
+            openhtmleditor();
+            reportBack();
+        });
     }
 
     function cleanCode() {
@@ -65,56 +61,52 @@ window.addEventListener("load", function () {
               "\nNumber of <div>s replaced: " + $(baddiv).length +
               "\n\nWritten By Grant Johnson");
 
-        $("a[id*='fixstuff']").html('<strong style="color: #00cc00;">' + numPosFixes() + " Issues fixed!</strong>");
+        $("a[id*='fixstuff']").html('<strong style="color: #00cc00;">Issues fixed!</strong>');
     }
 
     function openhtmleditor() {
         document.querySelector('a[title*="HTML Source Editor"]').click();
-        var pagetitle = document.querySelector('input[id*="topicTitle"]').getAttribute("value");
-        //alert(pagetitle);
+        var pagetitle = document.querySelector('input[id*="topicTitle"]').getAttribute("value"); // Get activity title
         var checkExist = setInterval(function() {
             if ($('iframe[src*="/d2l/tools/blank.html"]').length) {
                 clearInterval(checkExist);
                 var sourceiframe = document.querySelector('iframe[src*="/d2l/tools/blank.html"]');
                 sourceiframe.onload = function() {
-                    
-                    var minibody = sourceiframe.contentWindow.document.querySelectorAll("*");
-                    
+
+                    var minibody = sourceiframe.contentWindow.document.querySelectorAll("*"); // Only elements from the editing frame
+
                     var sourcecodeelement = sourceiframe.contentWindow.document.querySelector("textarea[class='d2l-htmleditor-dialog-textarea']");
                     var sourcecode = sourcecodeelement.innerHTML;
-                    
+
                     // Make syntax human readable
                     sourcecode = sourcecode.replace(/&gt;/g , '>');
                     sourcecode = sourcecode.replace(/&lt;/g , '<');
-                    
+
                     // Make Changes
-                    sourcecode = sourcecode.replace(/<title>(.*?)</g, "<title>" + pagetitle + "<");
-                    sourcecode = sourcecode.replace(/<p><\/p>/g, "");
-                    
+                    sourcecode = sourcecode.replace(/<title>(.*?)</g, "<title>" + pagetitle + "<"); // Sync page title
+                    //sourcecode = sourcecode.replace(/&nbsp;/g, " ");
+                    sourcecode = sourcecode.replace(/&amp;/g  , "&");
+                    sourcecode = sourcecode.replace(/&ldquo;/g, "\"");
+                    sourcecode = sourcecode.replace(/&rdquo;/g, "\"");
+                    sourcecode = sourcecode.replace(/&lsquo;/g, "\'");
+                    sourcecode = sourcecode.replace(/&rsquo;/g, "\'");
+                    sourcecode = sourcecode.replace(/&ndash;/g, " - ");
+                    sourcecode = sourcecode.replace(/&mdash;/g, "-");
+                    sourcecode = sourcecode.replace(/<p><\/p>/g, ""); // get rid of empty paragraphs
+                    sourcecode = sourcecode.replace(/\/d2l\/le\/calendar\/\d{5}/g, "/d2l/le/calendar/{Orgunitid}"); // update calender links
+
                     // Return to origional syntax
                     sourcecode = sourcecode.replace(/>/g , '&gt;');
                     sourcecode = sourcecode.replace(/</g , '&lt;');
-                    
+
+                    // Set modified code to the page
                     sourcecodeelement.innerHTML = sourcecode;
                     
-                    $(minibody).filter('div[class="d2l-dialog-button-group"] a:first-child').attr("title", "testing");
-                    //document.querySelector('a[id*="d2l_1_5"]').click();
-                    $(minibody).filter('a[title="testing"]').mouseup;
-                }
+                    // Notify user to save changes
+                    $(minibody).filter("[class*='d2l-checkbox-container']").after('<p><em><strong style="color: #FF0000;">LinkFlagger:</strong> Changes have been made to this source code, please Save it.</em></p>');
+                };
             }
         }, 100);
-    }
-
-    function numPosFixes() {
-        return $(emdivs).length +
-            $(baddiv).length +
-            $(altimg).length +
-            $(bs).length +
-            $(is).length +
-            $(bolds).length +
-            $(spans).length +
-            $(as).length +
-            $(empty).length;
     }
 
     function updateVars() {
