@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     46
+// @version     47
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -9,17 +9,22 @@
 // ==/UserScript==
 window.addEventListener("load", function () {
 
-    if (document.title == "Login - Brigham Young University - Idaho") {
-        swspoilers();
+    if (document.title == "Login - Brigham Young University - Idaho") { 
+        swspoilers(); // Log in page easter egg
     }
 
     // Clean or flag
     var ciframe = document.querySelectorAll("iframe");
     if (ciframe.length > 0) {
-        dctitle = document.querySelector("h1[class*='d2l-page-title']"); // Get the page title.
-        if (dctitle.textContent == "Edit HTML File") {
+        var dctitle = document.querySelector("h1[class*='d2l-page-title']"); // Get the page title.
+        if (dctitle == null) {
+            dctitle = "no title"; // if element is null, set a fake value
+        } else {
+            dctitle = dctitle.textContent; // if element exsists, reuse variable to title
+        }
+        if (dctitle == "Edit HTML File") {
             fixIssues(); // Fix issues if on edit page
-        } else if (ciframe[0].getAttribute('class').includes('d2l-iframe')) {
+        } else if (ciframe[0].className.indexOf('d2l-iframe') == 0) {
             flagCode(); // Otherwise flag page
         }
     }
@@ -27,24 +32,26 @@ window.addEventListener("load", function () {
     var bs, is, brs, divs, bolds, spans, as, empty, altimg, body, emdivs, baddiv, youtube, equila;
 
     function fixIssues() {
-        $("div[class*='d2l-left d2l-inline']").after('<a type="button" roll="button" class="d2l-button vui-button" id="fixstuff" style="vertical-align: top;"><strong>BETA:</strong> Fix issues. <em>Can interfere with formating</em></a>');
+        $("div[class*='d2l-left d2l-inline']").after('<a type="button" roll="button" class="d2l-button vui-button" id="fixstuff" style="vertical-align: top;"><strong>BETA:</strong> Fix issues. <em>Can interfere with formating</em></a>'); // Generate button
         
         document.getElementById("fixstuff").addEventListener("click", function () {
-            updateVars();
-            cleanCode();
-            openhtmleditor();
-            $("a[id*='fixstuff']").html('<strong style="color: #00cc00;">Issues fixed!</strong>');
+            updateVars(); // update varuiables before running
+            cleanCode(); // actualy clean the code
+            updateVars(); // Run again for good measure
+            cleanCode(); // Run again for good measure
+            openhtmleditor(); // open the HTML editor and fix a bunch of stuff
+            $("a[id*='fixstuff']").html('<strong style="color: #00cc00;">Issues fixed!</strong>'); // set the button to notify user that it ran. 
         });
     }
 
     function cleanCode() {
-        $(emdivs).contents().unwrap();
-        $(baddiv).contents().unwrap().wrap('<p/>');
-        $(body).find("img:not([alt])").attr("alt", "");
-        $(bs).contents().unwrap().wrap('<strong/>');
-        $(altimg).attr("alt", "");
-        $(is).contents().unwrap().wrap('<em/>');
-        $(bolds).contents().unwrap().wrap('<strong/>');
+        $(bolds).contents().wrap('<strong/>'); // wrap bolds with strongs
+        $(bolds).removeAttr("style"); // wrap bolds with strongs
+        $(emdivs).contents().unwrap(); // remove empty divs
+        $(baddiv).contents().unwrap().wrap('<p/>'); // wrap divs with text in ps
+        $(altimg).attr("alt", "Course Image"); // set images without an alt tag to have an empty one
+        $(bs).contents().unwrap().wrap('<strong/>'); //  wrap b tags with strongs
+        $(is).contents().unwrap().wrap('<em/>'); // wrap i tags with em tags
         $(spans).contents().unwrap();
         $(as).attr("target", "_blank");
         $(empty).remove();
@@ -128,7 +135,7 @@ window.addEventListener("load", function () {
         is      = ciframe[0].contentWindow.document.querySelectorAll("i");
         brs     = ciframe[0].contentWindow.document.querySelectorAll("br");
         body    = ciframe[0].contentWindow.document.querySelectorAll("*");
-        bolds   = ciframe[0].contentWindow.document.querySelectorAll("span[style*='bold']");
+        bolds   = ciframe[0].contentWindow.document.querySelectorAll("[style*='bold']");
         spans   = ciframe[0].contentWindow.document.querySelectorAll("span:not([style])");
         as      = ciframe[0].contentWindow.document.querySelectorAll("a:not([target='_blank'])");
         empty   = ciframe[0].contentWindow.document.querySelectorAll("strong:empty, em:empty, br, b:empty");
