@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     47
+// @version     48
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -17,14 +17,14 @@ window.addEventListener("load", function () {
     var ciframe = document.querySelectorAll("iframe");
     if (ciframe.length > 0) {
         var dctitle = document.querySelector("h1[class*='d2l-page-title']"); // Get the page title.
-        if (dctitle == null) {
+        if (dctitle === null) {
             dctitle = "no title"; // if element is null, set a fake value
         } else {
             dctitle = dctitle.textContent; // if element exsists, reuse variable to title
         }
         if (dctitle == "Edit HTML File") {
             fixIssues(); // Fix issues if on edit page
-        } else if (ciframe[0].className.indexOf('d2l-iframe') == 0) {
+        } else if (ciframe[0].className.indexOf('d2l-iframe') === 0) {
             flagCode(); // Otherwise flag page
         }
     }
@@ -33,7 +33,7 @@ window.addEventListener("load", function () {
 
     function fixIssues() {
         $("div[class*='d2l-left d2l-inline']").after('<a type="button" roll="button" class="d2l-button vui-button" id="fixstuff" style="vertical-align: top;"><strong>BETA:</strong> Fix issues. <em>Can interfere with formating</em></a>'); // Generate button
-        
+
         document.getElementById("fixstuff").addEventListener("click", function () {
             updateVars(); // update varuiables before running
             cleanCode(); // actualy clean the code
@@ -72,7 +72,7 @@ window.addEventListener("load", function () {
               "\nNumber of <div>s replaced: " + $(baddiv).length +
               "\n\nWritten By Grant Johnson");
 
-        
+
     }
 
     function openhtmleditor() {
@@ -95,7 +95,7 @@ window.addEventListener("load", function () {
 
                     // Make Changes
                     sourcecode = sourcecode.replace(/<title>(.*?)</g, "<title>" + pagetitle + "<"); // Sync page title
-                    
+
                     sourcecode = sourcecode.replace(/&amp;/g  , "&");
                     sourcecode = sourcecode.replace(/&ldquo;/g, "\"");
                     sourcecode = sourcecode.replace(/&rdquo;/g, "\"");
@@ -103,7 +103,7 @@ window.addEventListener("load", function () {
                     sourcecode = sourcecode.replace(/&rsquo;/g, "\'");
                     sourcecode = sourcecode.replace(/&ndash;/g, " - ");
                     sourcecode = sourcecode.replace(/&mdash;/g, "-");
-                    
+
                     sourcecode = sourcecode.replace(/<p><\/p>/g, ""); // get rid of empty paragraphs
                     sourcecode = sourcecode.replace(/<h1><\/h1>/g, ""); // get rid of empty headers
                     sourcecode = sourcecode.replace(/<h2><\/h2>/g, ""); // get rid of empty headers
@@ -111,9 +111,9 @@ window.addEventListener("load", function () {
                     sourcecode = sourcecode.replace(/<h4><\/h4>/g, ""); // get rid of empty headers
                     sourcecode = sourcecode.replace(/<h5><\/h5>/g, ""); // get rid of empty headers
                     sourcecode = sourcecode.replace(/<h6><\/h6>/g, ""); // get rid of empty headers
-                    
+
                     sourcecode = sourcecode.replace(/\/d2l\/le\/calendar\/\d{5}/g, "/d2l/le/calendar/{Orgunitid}"); // Update calender links
-                    
+
                     sourcecode = sourcecode.replace(/due Saturday/g, 'due <s><strong style="color: #FF0000">SATURDAY</strong></s>'); // Forces compliance
 
                     // Return to origional syntax
@@ -122,7 +122,7 @@ window.addEventListener("load", function () {
 
                     // Set modified code to the page
                     sourcecodeelement.innerHTML = sourcecode;
-                    
+
                     // Notify user to save changes
                     $(minibody).filter("[class*='d2l-checkbox-container']").after('<p><em><strong style="color: #FF0000;">LinkFlagger:</strong> Changes have been made to this source code, please Save it.</em></p>');
                 };
@@ -149,6 +149,7 @@ window.addEventListener("load", function () {
     function flagCode() {
         body = ciframe[0].contentWindow.document.querySelectorAll("*"); // grabs all the elements from the iframe. 
 
+        flagccourselinks();
         // Set the vars once
         var bhlink  = $(body).filter("a[href*='brainhoney.com']");   // If link element contains link from brainhoney
         var boxlink = $(body).filter("a[href*='box.com']");          // If link element contains link from box
@@ -208,6 +209,29 @@ window.addEventListener("load", function () {
         // Flag filepath and page title
         flagflepath(document.querySelector("div[class*='d2l-fileviewer-text']"), document.querySelector("ol[class*='vui-breadcrumbs']")); // Checks File path
         flagpgtitle(document.querySelector("h1[class*='d2l-page-title']"), ciframe[0].contentWindow.document.querySelector("title"));     // Checks the titles
+    }
+
+    function flagccourselinks() {
+        var orgunitid = window.location.pathname.split('/')[4]; // Get OrgUnitId
+        var courselinks  = $(body).filter('a[href*="/d2l/"]'); // Get d2l links
+        var selector = "a:not([a*='" + orgunitid + "'])";
+        var badcourselinks = $(courselinks).filter(selector);
+        /*
+        $(badcourselinks).css({
+                "outline"    : "3px solid #d9432f",
+                "background" : "repeating-linear-gradient(45deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"
+            });
+        */
+        //alert(courselinks.length);
+        
+        var i = 0;
+        for ( i = 0; i < courselinks.length; i++) {
+            if ( courselinks[i].getAttribute("href").indexOf(orgunitid) == -1 ) {
+                courselinks[i].style.outline = "3px solid #d9432f";
+                courselinks[i].style.background = "repeating-linear-gradient(45deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)";
+                courselinks[i].title = "Error: This is a link to a diffrent course. Probably.";
+            }
+        }
     }
 
     function flagflepath(flepath, pathdiv) {
