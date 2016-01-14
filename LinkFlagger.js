@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     48
+// @version     52
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -33,7 +33,6 @@ window.addEventListener("load", function () {
 
     function fixIssues() {
         $("div[class*='d2l-left d2l-inline']").after('<a type="button" roll="button" class="d2l-button vui-button" id="fixstuff" style="vertical-align: top;"><strong>BETA:</strong> Fix issues. <em>Can interfere with formating</em></a>'); // Generate button
-
         document.getElementById("fixstuff").addEventListener("click", function () {
             updateVars(); // update varuiables before running
             cleanCode(); // actualy clean the code
@@ -59,6 +58,7 @@ window.addEventListener("load", function () {
         $(youtube).attr("width", "100%");
         $(equila).attr("height", "500px");
         $(equila).attr("width", "100%");
+        $(body).filter('a[href*="/d2l/le/calendar/"]').contents().unwrap();
     }
 
     function reportBack() {
@@ -104,17 +104,14 @@ window.addEventListener("load", function () {
                     sourcecode = sourcecode.replace(/&ndash;/g, " - ");
                     sourcecode = sourcecode.replace(/&mdash;/g, "-");
 
-                    sourcecode = sourcecode.replace(/<p><\/p>/g, ""); // get rid of empty paragraphs
+                    sourcecode = sourcecode.replace(/<p><\/p>/g, "");   // get rid of empty paragraphs
                     sourcecode = sourcecode.replace(/<h1><\/h1>/g, ""); // get rid of empty headers
                     sourcecode = sourcecode.replace(/<h2><\/h2>/g, ""); // get rid of empty headers
                     sourcecode = sourcecode.replace(/<h3><\/h3>/g, ""); // get rid of empty headers
                     sourcecode = sourcecode.replace(/<h4><\/h4>/g, ""); // get rid of empty headers
                     sourcecode = sourcecode.replace(/<h5><\/h5>/g, ""); // get rid of empty headers
                     sourcecode = sourcecode.replace(/<h6><\/h6>/g, ""); // get rid of empty headers
-
-                    sourcecode = sourcecode.replace(/\/d2l\/le\/calendar\/\d{5}/g, "/d2l/le/calendar/{Orgunitid}"); // Update calender links
-
-                    sourcecode = sourcecode.replace(/due Saturday/g, 'due <s><strong style="color: #FF0000">SATURDAY</strong></s>'); // Forces compliance
+                    sourcecode = sourcecode.replace(/<a><\/a>/g, "");   // get rid of empty links
 
                     // Return to origional syntax
                     sourcecode = sourcecode.replace(/>/g , '&gt;');
@@ -150,6 +147,8 @@ window.addEventListener("load", function () {
         body = ciframe[0].contentWindow.document.querySelectorAll("*"); // grabs all the elements from the iframe. 
 
         flagccourselinks();
+        flagccallinks();
+        
         // Set the vars once
         var bhlink  = $(body).filter("a[href*='brainhoney.com']");   // If link element contains link from brainhoney
         var boxlink = $(body).filter("a[href*='box.com']");          // If link element contains link from box
@@ -159,42 +158,19 @@ window.addEventListener("load", function () {
         var alimage = $(body).filter("img:not([alt])");              // Images with no alt attribute
         var bhimage = $(body).filter("img[src*='brainhoney']");      // Images from BrainHoney
         var emlink  = $(body).filter("a:empty");                     // Empty Links. 
+        var dynlink = $(body).filter("a[href*='viewContent']");      // Links that do not update when cloned
 
-        //Flag with red box
-        $([bhlink, boxlink, benlink]).each( function() {
+        
+        //Flag elements
+        $([bhlink, boxlink, benlink, dynlink]).each( function() {
             $(this).css({
-                "color"      : "#d9432f",
-                "outline"    : "3px solid #d9432f",
-                "background" : "repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"
-            });
+                "color"      : "#d9432f","outline"    : "3px solid #d9432f","background" : "repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"});
         });
-
-        // Flag with green box
-        $(bolds).css({
-            "outline"    : "3px solid #689F38",
-            "background" : "repeating-linear-gradient( 45deg, #DCEDC8, #DCEDC8 5px, #ffffff 5px, #ffffff 10px)"
-        });
-
-        // Flag with red box
-        $(badtar).css({
-            "border"     : "3px solid #ffb700",
-            "background" : "repeating-linear-gradient(135deg, #FFE0B2, #FFE0B2 5px, #ffffff 5px, #ffffff 10px)"
-        });
-
-        // Flags with a blue box
-        $(emlink).css({
-            "border"    : "3px solid #0057e7"
-        });
-
-        // Flags with red box
-        $(bhimage).css({
-            "border"    : "5px solid #d9432f"
-        });
-
-        // Flags with blue box
-        $(alimage).css({
-            "outline"   : " 5px solid #176ced"
-        });
+        $(bolds  ).css({"outline" : "3px solid #689F38", "background" : "repeating-linear-gradient( 45deg, #DCEDC8, #DCEDC8 5px, #ffffff 5px, #ffffff 10px)"});
+        $(badtar ).css({"border"  : "3px solid #ffb700", "background" : "repeating-linear-gradient(135deg, #FFE0B2, #FFE0B2 5px, #ffffff 5px, #ffffff 10px)"});
+        $(emlink ).css({"border"  : "3px solid #0057e7"});
+        $(bhimage).css({"border"  : "5px solid #d9432f"});
+        $(alimage).css({"outline" : "5px solid #176ced"});
 
         // Set titles
         seterrortitles(bhlink  , 'This is an iLearn 2.0 link, ');
@@ -205,6 +181,7 @@ window.addEventListener("load", function () {
         seterrortitles(emlink  , 'This link has an empty href or text, ');
         seterrortitles(bhimage , 'This image is from BrainHoney, ');
         seterrortitles(alimage , 'This Image has no alt text, ');
+        seterrortitles(dynlink , 'This link not dynamic and will not update when coppied, ');
 
         // Flag filepath and page title
         flagflepath(document.querySelector("div[class*='d2l-fileviewer-text']"), document.querySelector("ol[class*='vui-breadcrumbs']")); // Checks File path
@@ -216,24 +193,28 @@ window.addEventListener("load", function () {
         var courselinks  = $(body).filter('a[href*="/d2l/"]'); // Get d2l links
         var selector = "a:not([a*='" + orgunitid + "'])";
         var badcourselinks = $(courselinks).filter(selector);
-        /*
-        $(badcourselinks).css({
-                "outline"    : "3px solid #d9432f",
-                "background" : "repeating-linear-gradient(45deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"
-            });
-        */
-        //alert(courselinks.length);
-        
         var i = 0;
         for ( i = 0; i < courselinks.length; i++) {
             if ( courselinks[i].getAttribute("href").indexOf(orgunitid) == -1 ) {
                 courselinks[i].style.outline = "3px solid #d9432f";
                 courselinks[i].style.background = "repeating-linear-gradient(45deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)";
-                courselinks[i].title = "Error: This is a link to a diffrent course. Probably.";
+                seterrortitle(courselinks[i], "This is a link to a diffrent course, Probably, ");
             }
         }
     }
+    
+    function flagccallinks() {
 
+        var callinks = $(body).filter("a[href*='/d2l/le/calendar/']");
+        $(callinks).css({
+                "color"      : "#d9432f",
+                "outline"    : "3px solid #d9432f",
+                "background" : "repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"
+            });
+        seterrortitles(callinks  , 'This is a calendar link, ');           
+    }
+    
+    
     function flagflepath(flepath, pathdiv) {
         if (!flepath.getAttribute('data-location').includes('%20Files')) {
             $(pathdiv).css({
@@ -277,7 +258,22 @@ window.addEventListener("load", function () {
         }
     }
 
+    function seterrortitle(element, titletext) {
+        var newtitle = '';
+        var curtitle = '';
+        if (element !== undefined) {
+            if (element.title.indexOf('Issues') === 0) {
+                curtitle = '';
+                curtitle = element.getAttribute('title');
+                newtitle = curtitle + titletext;
+            } else {
+                newtitle = 'Issues: ' + titletext;
+            }
+            element.setAttribute('title', newtitle);
+        }
+    }
+
     function swspoilers() {
-        $(document.querySelector("h1[class*='d2l-login-portal-heading']")).html('<h1 style="font-size: 24px; text-align: center; color: #ff0000"><span style="font-weight:bold">"WHY DID YOU HAVE TO SPOIL THE FORCE AWAKENS"</span></h1><br><img width="100%" src="http://i.imgur.com/HTeuMZ8.gif">');
+        $(document.querySelector("h1[class*='d2l-login-portal-heading']")).html('<h1 style="font-size: 24px; text-align: center; color: #ff0000"><span style="font-weight:bold">Returning from Christmas Break like....</span></h1><br><img width="100%" src="http://i.imgur.com/2gNqzcd.gif">');
     }
 });
