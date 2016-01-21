@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     52
+// @version     54
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -274,6 +274,6 @@ window.addEventListener("load", function () {
     }
 
     function swspoilers() {
-        $(document.querySelector("h1[class*='d2l-login-portal-heading']")).html('<h1 style="font-size: 24px; text-align: center; color: #ff0000"><span style="font-weight:bold">Returning from Christmas Break like....</span></h1><br><img width="100%" src="http://i.imgur.com/2gNqzcd.gif">');
+        $(document.querySelector("h1[class*='d2l-login-portal-heading']")).html('<h1 style="font-size: 24px; text-align: center; color: #000000"><span style="font-weight:bold">Star Wars VIII Delayed 7 Months?!!</span></h1><br><img width="100%" src="http://i.imgur.com/eY58ck6.gif">');
     }
 });
