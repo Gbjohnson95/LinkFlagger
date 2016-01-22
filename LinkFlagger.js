@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        LinkFlagger
-// @version     54
+// @version     56
 // @author      Grant Johnson
 // @description Highlights brainhoney and box links and images.
 // @include     *brightspace.com*
@@ -59,6 +59,7 @@ window.addEventListener("load", function () {
         $(equila).attr("height", "500px");
         $(equila).attr("width", "100%");
         $(body).filter('a[href*="/d2l/le/calendar/"]').contents().unwrap();
+        $(body).filter('a[href*="/home/"]').contents().unwrap();
     }
 
     function reportBack() {
@@ -148,7 +149,7 @@ window.addEventListener("load", function () {
 
         flagccourselinks();
         flagccallinks();
-        
+
         // Set the vars once
         var bhlink  = $(body).filter("a[href*='brainhoney.com']");   // If link element contains link from brainhoney
         var boxlink = $(body).filter("a[href*='box.com']");          // If link element contains link from box
@@ -160,7 +161,7 @@ window.addEventListener("load", function () {
         var emlink  = $(body).filter("a:empty");                     // Empty Links. 
         var dynlink = $(body).filter("a[href*='viewContent']");      // Links that do not update when cloned
 
-        
+
         //Flag elements
         $([bhlink, boxlink, benlink, dynlink]).each( function() {
             $(this).css({
@@ -171,6 +172,8 @@ window.addEventListener("load", function () {
         $(emlink ).css({"border"  : "3px solid #0057e7"});
         $(bhimage).css({"border"  : "5px solid #d9432f"});
         $(alimage).css({"outline" : "5px solid #176ced"});
+        $(body).filter('a[href*="/Home"]').css({"color"      : "#d9432f","outline"    : "3px solid #d9432f","background" : "repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"});
+        $(body).filter('a[href*="/home/"]').css({"color"      : "#d9432f","outline"    : "3px solid #d9432f","background" : "repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"});
 
         // Set titles
         seterrortitles(bhlink  , 'This is an iLearn 2.0 link, ');
@@ -181,7 +184,9 @@ window.addEventListener("load", function () {
         seterrortitles(emlink  , 'This link has an empty href or text, ');
         seterrortitles(bhimage , 'This image is from BrainHoney, ');
         seterrortitles(alimage , 'This Image has no alt text, ');
-        seterrortitles(dynlink , 'This link not dynamic and will not update when coppied, ');
+        seterrortitles(dynlink , 'This link is a Static IL3 link and WILL NOT update when coppied, ');
+        seterrortitles( $(body).filter('a[href*="/Home"]') , 'This link is a Static IL3 link and WILL NOT update when coppied, ');
+        seterrortitles( $(body).filter('a[href*="/home/"]') , 'This link is a Static IL3 link and WILL NOT update when coppied, ');
 
         // Flag filepath and page title
         flagflepath(document.querySelector("div[class*='d2l-fileviewer-text']"), document.querySelector("ol[class*='vui-breadcrumbs']")); // Checks File path
@@ -202,19 +207,19 @@ window.addEventListener("load", function () {
             }
         }
     }
-    
+
     function flagccallinks() {
 
         var callinks = $(body).filter("a[href*='/d2l/le/calendar/']");
         $(callinks).css({
-                "color"      : "#d9432f",
-                "outline"    : "3px solid #d9432f",
-                "background" : "repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"
-            });
+            "color"      : "#d9432f",
+            "outline"    : "3px solid #d9432f",
+            "background" : "repeating-linear-gradient(135deg, #ffcdd2, #ffcdd2 5px, #ffffff 5px, #ffffff 10px)"
+        });
         seterrortitles(callinks  , 'This is a calendar link, ');           
     }
-    
-    
+
+
     function flagflepath(flepath, pathdiv) {
         if (!flepath.getAttribute('data-location').includes('%20Files')) {
             $(pathdiv).css({
